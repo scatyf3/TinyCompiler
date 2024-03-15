@@ -1,5 +1,5 @@
 run: tinyCompiler
-	./tinyCompiler < testcase3.minic > ../out/test.asm
+	./tinyCompiler < ../test/testcase3.minic > ../out/test.asm
 
 lex.yy.cpp: ../src/tokenrizer.l
 	flex -o $@ $^
