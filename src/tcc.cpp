@@ -22,6 +22,7 @@ std::string pushToken(Token t);
 std::string eval(std::deque<Token> leftExp);
 std::vector<std::string> splitString(const std::string& str, char delimiter);
 void printTokens(const std::deque<std::deque<Token>>& tokens);
+void printLine(const std::deque<Token>& line);
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
         inputFile.close();
 
         std::deque<std::deque<Token>> token = tokenize(sourceCode);
-        printTokens(token);
+        //printTokens(token);
         std::string output = compile(token);
         std::cout << output << std::endl;
     } else {
@@ -64,6 +65,7 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
     std::string line;
 
     while (std::getline(iss, line, '\n')) {
+
         std::deque<Token> tokens;
         std::istringstream lineIss(line);
         std::string token;
@@ -91,13 +93,13 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
 
     return lines;
 }
-
+//"sw $zero,-4($fp)\nsw $zero,-8($fp)\nsw $zero,-12($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-4($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-8($fp)\n"
 std::string compile(std::deque<std::deque<Token>> token) {
     std::string asm_src;
-
     while (!token.empty()) {
         std::deque<Token> cur_line = token.front();
         while (!cur_line.empty()) {
+            printLine(cur_line);
             if (cur_line.front().value == "return") {
                 // exit program
                 cur_line.pop_front();
@@ -118,9 +120,10 @@ std::string compile(std::deque<std::deque<Token>> token) {
                     }
                     asm_src += "($fp)";
                 }
-                asm_src += "lw $v0, -12($fp)";
+                //asm_src += "lw $v0, -12($fp)";
+                break;
             }
-            if (cur_line.front().value == "int") {
+            if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
                 cur_line.pop_front();
                 Token symbol = cur_line.front();
@@ -161,15 +164,13 @@ std::string compile(std::deque<std::deque<Token>> token) {
                     asm_src += std::to_string(result);
                 }
                 asm_src += "($fp)";
-
-            }
-            else{
-                std::cout<<"Unknown Token"<<std::endl;
+                break;//如果没有意外，全部的左值都交给eval，这样的话本行已然处理完毕
             }
         }
         token.pop_front();
         asm_src += "\n";
     }
+    return asm_src;
 }
 
 std::string eval(std::deque<Token> leftExp) {
@@ -187,12 +188,12 @@ std::string eval(std::deque<Token> leftExp) {
     //addiu $sp, $sp, -4
     std::stack<Token> ops;
     int stack_counter = 1;
-    pushToken(leftExp.front());
+    asm_src+=pushToken(leftExp.front());
     leftExp.pop_front();
     while (!leftExp.empty()) {
         ops.push(leftExp.front());
         leftExp.pop_front();
-        pushToken(leftExp.front());
+        asm_src+=pushToken(leftExp.front());
         leftExp.pop_front();
     }
     // calculate
@@ -215,8 +216,8 @@ std::string eval(std::deque<Token> leftExp) {
             asm_src += "div $t0, $t0, $t1\n";
         }
         ops.pop();  
-        asm_src+="sw $t0, 8($sp)";
-        asm_src+="addiu $sp, $sp, 4";
+        asm_src+="sw $t0, 8($sp)\n";
+        asm_src+="addiu $sp, $sp, 4\n";
     }
     //复原stack,储存回fp
     asm_src+="lw $v0, 4($sp)\n";
@@ -248,7 +249,7 @@ bool isValidLeftExpression(const std::deque<Token>& leftExp) {
     return true;
 }
 
-std::string pushToken(Token t) {
+std::string pushToken(Token t) {//✅
     // lw $v0, -4($fp) #if token is varible
     // li $v0, 42 # if token is pure value
     // sw $v0, 0($sp)
@@ -271,6 +272,7 @@ std::string pushToken(Token t) {
     }
     asm_src += "sw $v0, 0($sp)\n";
     asm_src += "addiu $sp, $sp, -4\n";
+    return asm_src;
 }
 
 std::vector<std::string> splitString(const std::string& str, char delimiter) {
@@ -300,4 +302,11 @@ void printTokens(const std::deque<std::deque<Token>>& tokens) {
         }
         std::cout << std::endl;  // 打印每一行之间的空行
     }
+}
+
+void printLine(const std::deque<Token>& line) {
+    for (const auto& token : line) {
+        std::cout << "Value: " << token.value << ", Type: " << token.type << std::endl;
+    }
+    std::cout << std::endl; // 打印每一行之间的空行
 }
