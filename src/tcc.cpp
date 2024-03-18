@@ -10,7 +10,6 @@
 struct Token {
     std::string value;
     std::string type;
-
     Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
 };
 
@@ -21,6 +20,8 @@ bool isValidLeftExpression(const std::deque<Token>& leftExp);
 std::deque<std::deque<Token>> tokenize(const std::string& str);
 std::string pushToken(Token t);
 std::string eval(std::deque<Token> leftExp);
+std::vector<std::string> splitString(const std::string& str, char delimiter);
+void printTokens(const std::deque<std::deque<Token>>& tokens);
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -35,9 +36,11 @@ int main(int argc, char* argv[]) {
         std::stringstream buffer;
         buffer << inputFile.rdbuf();
         std::string sourceCode = buffer.str();
+        sourceCode.erase(std::remove(sourceCode.begin(), sourceCode.end(), ';'), sourceCode.end());
         inputFile.close();
 
         std::deque<std::deque<Token>> token = tokenize(sourceCode);
+        printTokens(token);
         std::string output = compile(token);
         std::cout << output << std::endl;
     } else {
@@ -47,47 +50,50 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+//input: int a;\nint b;\nint d;\na = 1;\nb = 2;\nd = a + b;\nreturn d;
+//按照空格分token，按照\n分行
+//output: std::deque<std::deque<Token>>,which one line of src is std::deque<Token>
+//struct Token {
+//    std::string value;
+//    std::string type;
+//    Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
+//};
 std::deque<std::deque<Token>> tokenize(const std::string& str) {
-    std::deque<std::deque<Token>> tokenGroups;
-    std::deque<Token> currentGroup;
-    std::regex keyword("\\b(int|return)\\b");
-    std::regex identifier("\\b[a-zA-Z]+\\b");
-    std::regex constant(R"(\b\d+\b)");
-    std::regex operatorRegex("[=+\\-*/]");
-    std::regex delimiter(";");
+    std::deque<std::deque<Token>> lines;
     std::istringstream iss(str);
     std::string line;
-    while (std::getline(iss, line)) {
-        std::smatch match;
-        std::string remaining = line;
-        while (std::regex_search(remaining, match, keyword)) {
-            currentGroup.emplace_back(match.str(), "keyword");
-            remaining = match.suffix().str();
+
+    while (std::getline(iss, line, '\n')) {
+        std::deque<Token> tokens;
+        std::istringstream lineIss(line);
+        std::string token;
+        while (lineIss >> token) {
+            std::string type = "unknown";
+            // Check if the token is a keyword
+            if (token == "int" || token == "return")
+                type = "keyword";
+                // Check if the token is a numeric constant
+            else if (std::all_of(token.begin(), token.end(), ::isdigit))
+                type = "constant";
+                // Check if the token is an identifier (variable name)
+            else if (std::isalpha(token[0]) || token[0] == '_')
+                type = "identifier";
+                // Check if the token is an operator
+            else if (token == "=" || token == "+"||token == "*" || token == "/")
+                type = "operator";
+                // Check if the token is a semicolon
+            else if (token == ";")
+                {}//DO NOTHING
+            tokens.emplace_back(token, type);
         }
-        while (std::regex_search(remaining, match, identifier)) {
-            currentGroup.emplace_back(match.str(), "identifier");
-            remaining = match.suffix().str();
-        }
-        while (std::regex_search(remaining, match, constant)) {
-            currentGroup.push_back(Token(match.str(), "constant"));
-            remaining = match.suffix().str();
-        }
-        while (std::regex_search(remaining, match, operatorRegex)) {
-            currentGroup.push_back(Token(match.str(), "operator"));
-            remaining = match.suffix().str();
-        }
-        while (std::regex_search(remaining, match, delimiter)) {
-            currentGroup.push_back(Token(match.str(), "delimiter"));
-            tokenGroups.push_back(currentGroup);
-            currentGroup.clear();
-            remaining = match.suffix().str();
-        }
+        lines.push_back(tokens);
     }
-    return tokenGroups;
+
+    return lines;
 }
 
 std::string compile(std::deque<std::deque<Token>> token) {
-    std::string asm_src = "";
+    std::string asm_src;
 
     while (!token.empty()) {
         std::deque<Token> cur_line = token.front();
@@ -156,6 +162,9 @@ std::string compile(std::deque<std::deque<Token>> token) {
                 }
                 asm_src += "($fp)";
 
+            }
+            else{
+                std::cout<<"Unknown Token"<<std::endl;
             }
         }
         token.pop_front();
@@ -262,4 +271,33 @@ std::string pushToken(Token t) {
     }
     asm_src += "sw $v0, 0($sp)\n";
     asm_src += "addiu $sp, $sp, -4\n";
+}
+
+std::vector<std::string> splitString(const std::string& str, char delimiter) {
+    std::vector<std::string> substrings;
+    std::string currentSubstring;
+    for (char c : str) {
+        if (c == delimiter) {
+            substrings.push_back(currentSubstring);
+            currentSubstring.clear();
+        } else {
+            currentSubstring += c;
+        }
+    }
+    // Add the last substring if it's not empty
+    if (!currentSubstring.empty()) {
+        substrings.push_back(currentSubstring);
+    }
+
+    return substrings;
+}
+
+
+void printTokens(const std::deque<std::deque<Token>>& tokens) {
+    for (const auto& line : tokens) {
+        for (const auto& token : line) {
+            std::cout << "Value: " << token.value << ", Type: " << token.type << std::endl;
+        }
+        std::cout << std::endl;  // 打印每一行之间的空行
+    }
 }
