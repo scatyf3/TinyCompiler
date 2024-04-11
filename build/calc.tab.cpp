@@ -84,7 +84,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-extern FILE* yyin; // 声明全局变量 yyin
+#ifdef YYDEBUG
+  yydebug = 1;
+#endif
 int yylex(void); // 声明 yylex 函数
 void yyerror(const char*);
 #define YYSTYPE char *
@@ -121,7 +123,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 125 "calc.tab.cpp"
+#line 127 "calc.tab.cpp"
 
 #ifdef short
 # undef short
@@ -407,8 +409,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    19,    19,    20,    23,    26,    27,    28,    29,    30,
-      31,    32,    33
+       0,    21,    21,    22,    25,    28,    29,    30,    31,    32,
+      33,    34,    35
 };
 #endif
 
@@ -1319,53 +1321,53 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 23 "../src/parser.y"
+#line 25 "../src/parser.y"
     { printf("pop %s\n\n", (yyvsp[(1) - (4)])); }
     break;
 
   case 5:
-#line 26 "../src/parser.y"
+#line 28 "../src/parser.y"
     { printf("add\n"); }
     break;
 
   case 6:
-#line 27 "../src/parser.y"
+#line 29 "../src/parser.y"
     { printf("sub\n"); }
     break;
 
   case 7:
-#line 28 "../src/parser.y"
+#line 30 "../src/parser.y"
     { printf("mul\n"); }
     break;
 
   case 8:
-#line 29 "../src/parser.y"
+#line 31 "../src/parser.y"
     { printf("div\n"); }
     break;
 
   case 9:
-#line 30 "../src/parser.y"
+#line 32 "../src/parser.y"
     { printf("neg\n"); }
     break;
 
   case 10:
-#line 31 "../src/parser.y"
+#line 33 "../src/parser.y"
     { printf("push %s\n", (yyvsp[(1) - (1)])); }
     break;
 
   case 11:
-#line 32 "../src/parser.y"
+#line 34 "../src/parser.y"
     { printf("push %s\n", (yyvsp[(1) - (1)])); }
     break;
 
   case 12:
-#line 33 "../src/parser.y"
+#line 35 "../src/parser.y"
     { /* empty */ }
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1369 "calc.tab.cpp"
+#line 1371 "calc.tab.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1579,17 +1581,9 @@ yyreturn:
 }
 
 
-#line 36 "../src/parser.y"
+#line 38 "../src/parser.y"
 
 
 int main() {
-    FILE* file = fopen("../test/testcase3.minic", "r"); // 打开文件
-    if (!file) {
-        fprintf(stderr, "无法打开文件\n");
-        return 1;
-    }
-    yyin = file; // 将文件指针传递给 yyin
-    int result = yyparse();
-    fclose(file); // 关闭文件
-    return result;
+    return yyparse();
 }

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+
 struct Token {
     std::string value;
     std::string type;
@@ -24,33 +25,6 @@ std::vector<std::string> splitString(const std::string& str, char delimiter);
 void printTokens(const std::deque<std::deque<Token>>& tokens);
 void printLine(const std::deque<Token>& line);
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cout << "未提供源代码文件名." << std::endl;
-        return 0;
-    }
-
-    std::string sourceCodeFileName = argv[1];
-    std::ifstream inputFile(sourceCodeFileName);
-
-    if (inputFile.is_open()) {
-        std::stringstream buffer;
-        buffer << inputFile.rdbuf();
-        std::string sourceCode = buffer.str();
-        sourceCode.erase(std::remove(sourceCode.begin(), sourceCode.end(), ';'), sourceCode.end());
-        inputFile.close();
-
-        std::deque<std::deque<Token>> token = tokenize(sourceCode);
-        //printTokens(token);
-        std::string output = compile(token);
-        std::cout << output << std::endl;
-    } else {
-        std::cout << "无法打开源代码文件." << std::endl;
-    }
-
-    return 0;
-}
-
 //input: int a;\nint b;\nint d;\na = 1;\nb = 2;\nd = a + b;\nreturn d;
 //按照空格分token，按照\n分行
 //output: std::deque<std::deque<Token>>,which one line of src is std::deque<Token>
@@ -63,9 +37,7 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
     std::deque<std::deque<Token>> lines;
     std::istringstream iss(str);
     std::string line;
-
     while (std::getline(iss, line, '\n')) {
-
         std::deque<Token> tokens;
         std::istringstream lineIss(line);
         std::string token;
@@ -81,7 +53,7 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
             else if (std::isalpha(token[0]) || token[0] == '_')
                 type = "identifier";
                 // Check if the token is an operator
-            else if (token == "=" || token == "+"||token == "*" || token == "/")
+            else if (token == "=" || token == "+"||token == "*" || token == "/" || token == "-")
                 type = "operator";
                 // Check if the token is a semicolon
             else if (token == ";")
@@ -90,7 +62,6 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
         }
         lines.push_back(tokens);
     }
-
     return lines;
 }
 //"sw $zero,-4($fp)\nsw $zero,-8($fp)\nsw $zero,-12($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-4($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-8($fp)\n"
@@ -99,7 +70,7 @@ std::string compile(std::deque<std::deque<Token>> token) {
     while (!token.empty()) {
         std::deque<Token> cur_line = token.front();
         while (!cur_line.empty()) {
-            printLine(cur_line);
+            //printLine(cur_line);
             if (cur_line.front().value == "return") {
                 // exit program
                 cur_line.pop_front();
@@ -186,39 +157,39 @@ std::string eval(std::deque<Token> leftExp) {
     //lw $v0, -8($fp)
     //sw $v0, 0($sp)
     //addiu $sp, $sp, -4
-    std::stack<Token> ops;
-    int stack_counter = 1;
-    asm_src+=pushToken(leftExp.front());
-    leftExp.pop_front();
-    while (!leftExp.empty()) {
-        ops.push(leftExp.front());
-        leftExp.pop_front();
-        asm_src+=pushToken(leftExp.front());
-        leftExp.pop_front();
-    }
     // calculate
     // lw $t1, 4($sp)
     // lw $t0, 8($sp)
     // add $t0, $t0, $t1
-    while (!ops.empty()) {
-        asm_src += "lw $t1, " + std::to_string(stack_counter * 4) + "($sp)\n";
-        asm_src += "lw $t0, " + std::to_string((stack_counter + 1) * 4) + "($sp)\n";
-        Token op = ops.top();
+    asm_src+=pushToken(leftExp.front());
+    leftExp.pop_front();
+    while(!leftExp.empty()){
+        //value 1
+        Token curOp = leftExp.front();
+        leftExp.pop_front();
+        //value 2
+        asm_src+=pushToken(leftExp.front());
+        leftExp.pop_front();
+
+        //calculate
+        asm_src += "lw $t1, " + std::to_string(4) + "($sp)\n";
+        asm_src += "lw $t0, " + std::to_string(8) + "($sp)\n";
 
         // 翻译为不同的汇编指令
-        if (op.value == "+") {
+        if (curOp.value == "+") {
             asm_src += "add $t0, $t0, $t1\n";
-        } else if (op.value == "-") {
+        } else if (curOp.value == "-") {
             asm_src += "sub $t0, $t0, $t1\n";
-        } else if (op.value == "*") {
+        } else if (curOp.value == "*") {
             asm_src += "mul $t0, $t0, $t1\n";
-        } else if (op.value == "/") {
+        } else if (curOp.value == "/") {
             asm_src += "div $t0, $t0, $t1\n";
         }
-        ops.pop();  
         asm_src+="sw $t0, 8($sp)\n";
         asm_src+="addiu $sp, $sp, 4\n";
+
     }
+
     //复原stack,储存回fp
     asm_src+="lw $v0, 4($sp)\n";
     asm_src +="addiu $sp, $sp, 4\n";

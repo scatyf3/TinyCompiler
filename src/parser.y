@@ -1,7 +1,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-extern FILE* yyin; // 声明全局变量 yyin
+#ifdef YYDEBUG
+  yydebug = 1;
+#endif
 int yylex(void); // 声明 yylex 函数
 void yyerror(const char*);
 #define YYSTYPE char *

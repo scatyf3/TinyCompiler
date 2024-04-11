@@ -324,6 +324,9 @@ void yyfree ( void *  );
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
+
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
 FILE *yyin = NULL, *yyout = NULL;
@@ -353,8 +356,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 10
-#define YY_END_OF_BUFFER 11
+#define YY_NUM_RULES 4
+#define YY_END_OF_BUFFER 5
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,11 +365,9 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[26] =
+static const flex_int16_t yy_accept[9] =
     {   0,
-        0,    0,   11,    9,    2,    1,    4,    4,    7,    8,
-        8,    8,    2,    3,    7,    8,    8,    8,    3,    5,
-        8,    8,    8,    6,    0
+        0,    0,    5,    2,    3,    1,    2,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -375,16 +376,16 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    4,    4,    4,    4,    4,    5,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    1,    4,    1,
-        4,    1,    1,    1,    7,    7,    7,    7,    7,    7,
-        7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-        7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-        1,    1,    1,    1,    7,    1,    7,    7,    7,    7,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        8,    7,    7,    7,    9,    7,    7,    7,    7,   10,
-        7,    7,    7,   11,    7,   12,   13,    7,    7,    7,
-        7,    7,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -401,42 +402,29 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[14] =
+static const YY_CHAR yy_meta[4] =
     {   0,
-        1,    1,    2,    1,    1,    3,    3,    3,    3,    3,
-        3,    3,    3
+        1,    2,    2
     } ;
 
-static const flex_int16_t yy_base[28] =
+static const flex_int16_t yy_base[10] =
     {   0,
-        0,    0,   29,   30,   26,   30,   30,   22,   20,    0,
-       15,   16,   21,    0,   16,    0,    9,    8,    0,    0,
-        6,    7,    7,    0,   30,   12,   13
+        0,    0,    5,    0,    6,    6,    0,    6,    3
     } ;
 
-static const flex_int16_t yy_def[28] =
+static const flex_int16_t yy_def[10] =
     {   0,
-       25,    1,   25,   25,   25,   25,   25,   25,   25,   26,
-       26,   26,   25,   27,   25,   26,   26,   26,   27,   26,
-       26,   26,   26,   26,    0,   25,   25
+        8,    1,    8,    9,    8,    8,    9,    0,    8
     } ;
 
-static const flex_int16_t yy_nxt[44] =
+static const flex_int16_t yy_nxt[10] =
     {   0,
-        4,    5,    6,    7,    8,    9,   10,   10,   11,   10,
-       12,   10,   10,   19,   16,   19,   24,   23,   22,   21,
-       20,   15,   13,   18,   17,   15,   14,   13,   25,    3,
-       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
-       25,   25,   25
+        4,    5,    6,    7,    8,    3,    8,    8,    8
     } ;
 
-static const flex_int16_t yy_chk[44] =
+static const flex_int16_t yy_chk[10] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,   27,   26,   27,   23,   22,   21,   18,
-       17,   15,   13,   12,   11,    9,    8,    5,    3,   25,
-       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
-       25,   25,   25
+        1,    1,    1,    9,    3,    8,    8,    8,    8
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -455,34 +443,14 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "../src/tokenrizer.l"
 #line 2 "../src/tokenrizer.l"
-#include <string>
+#include "../src/tcc.hpp"
+std::deque<std::deque<Token>> token;
 
-typedef enum {//start from 256, no conflict with ASCII
-    T_Le = 256, T_Ge, T_Eq, T_Ne, T_And, T_Or, T_IntConstant,
-    T_StringConstant, T_Identifier, T_Void, T_Int, T_While,
-    T_If, T_Else, T_Return, T_Break, T_Continue, T_Print,
-    T_ReadInt
-} TokenType;
-
-
-static void print_token(int token) {
-    static char* token_strs[] = {
-        "T_Le", "T_Ge", "T_Eq", "T_Ne", "T_And", "T_Or", "T_IntConstant",
-        "T_StringConstant", "T_Identifier", "T_Void", "T_Int", "T_While",
-        "T_If", "T_Else", "T_Return", "T_Break", "T_Continue", "T_Print",
-        "T_ReadInt"
-    };
-    if (token < 256) {
-        printf("%-20c", token);
-    } else {
-        printf("%-20s", token_strs[token-256]);
-    }
-}
-int cur_line_num = 1;
-void init_scanner();
-void lex_error(char* msg, int line);
-#line 484 "lex.yy.cpp"
-#line 485 "lex.yy.cpp"
+//FOR TEST
+#define T_WORD 1
+int numChars = 0, numWords = 0, numLines = 0;
+#line 452 "lex.yy.cpp"
+#line 453 "lex.yy.cpp"
 
 #define INITIAL 0
 
@@ -699,10 +667,9 @@ YY_DECL
 		}
 
 	{
-#line 37 "../src/tokenrizer.l"
+#line 13 "../src/tokenrizer.l"
 
-
-#line 705 "lex.yy.cpp"
+#line 672 "lex.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -729,13 +696,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 26 )
+				if ( yy_current_state >= 9 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 30 );
+		while ( yy_base[yy_current_state] != 6 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -762,59 +729,29 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 39 "../src/tokenrizer.l"
-{ cur_line_num++;                       }
+#line 14 "../src/tokenrizer.l"
+{ numLines++; numChars++; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 40 "../src/tokenrizer.l"
-{ /* ignore all spaces */               }
+#line 15 "../src/tokenrizer.l"
+{ numWords++; numChars += yyleng; return T_WORD; }
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 16 "../src/tokenrizer.l"
+{ return 0; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 41 "../src/tokenrizer.l"
-{ /* skip for single line comment */    }
+#line 17 "../src/tokenrizer.l"
+{ numChars++; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 43 "../src/tokenrizer.l"
-{ return yytext[0];         }   
-	YY_BREAK
-case 5:
-YY_RULE_SETUP
-#line 44 "../src/tokenrizer.l"
-{ return T_Int;             }
-	YY_BREAK
-case 6:
-YY_RULE_SETUP
-#line 45 "../src/tokenrizer.l"
-{ return T_Return;          }
-	YY_BREAK
-case 7:
-YY_RULE_SETUP
-#line 48 "../src/tokenrizer.l"
-{ return T_IntConstant;     }
-	YY_BREAK
-case 8:
-YY_RULE_SETUP
-#line 49 "../src/tokenrizer.l"
-{ return T_Identifier;      }
-	YY_BREAK
-case YY_STATE_EOF(INITIAL):
-#line 51 "../src/tokenrizer.l"
-{ return 0; }
-	YY_BREAK
-case 9:
-YY_RULE_SETUP
-#line 53 "../src/tokenrizer.l"
-{ lex_error("Unrecognized character", cur_line_num);        }
-	YY_BREAK
-case 10:
-YY_RULE_SETUP
-#line 55 "../src/tokenrizer.l"
+#line 18 "../src/tokenrizer.l"
 ECHO;
 	YY_BREAK
-#line 817 "lex.yy.cpp"
+#line 754 "lex.yy.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1109,7 +1046,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 26 )
+			if ( yy_current_state >= 9 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1137,11 +1074,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 26 )
+		if ( yy_current_state >= 9 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 25);
+	yy_is_jam = (yy_current_state == 8);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1817,38 +1754,36 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 55 "../src/tokenrizer.l"
+#line 18 "../src/tokenrizer.l"
 
 
-/* FOR testing
+
+
+
 int main(int argc, char* argv[]) {
-    int token;
-    init_scanner();
-    while (token = yylex()) {
-        print_token(token);
-        puts(yytext);
+    if (argc < 2) {
+        std::cout << "未提供源代码文件名." << std::endl;
+        return 0;
+    }
+
+    std::string sourceCodeFileName = argv[1];
+    std::ifstream inputFile(sourceCodeFileName);
+
+    if (inputFile.is_open()) {
+        std::stringstream buffer;
+        buffer << inputFile.rdbuf();
+        std::string sourceCode = buffer.str();
+        sourceCode.erase(std::remove(sourceCode.begin(), sourceCode.end(), ';'), sourceCode.end());
+        inputFile.close();
+        yylex();
+        //printTokens(token);
+        std::string output = compile(token);
+        std::cout << output << std::endl;
+    } else {
+        std::cout << "无法打开源代码文件." << std::endl;
     }
 
     return 0;
 }
-*/
-void init_scanner() {
-    printf("%-20s%s\n", "TOKEN-TYPE", "TOKEN-VALUE");
-    printf("-------------------------------------------------\n");
-}
-
-void lex_error(char* msg, int line) {
-    printf("\nError at line %-3d: %s\n\n", line, msg);
-}
-
-void yyerror(const char *msg) {
-    printf("Error at line %d:\n\t%s\n", cur_line_num, msg);
-    exit(1);
-}
 
 
-
-
-int yywrap(void) {
-    return 1;
-}
