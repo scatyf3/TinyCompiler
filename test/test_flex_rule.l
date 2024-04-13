@@ -1,7 +1,6 @@
 %{
 #include "../src/tcc.hpp"
 std::deque<Token> token;
-
 %}
 
 %option noyywrap
@@ -19,19 +18,14 @@ WORD		([^ \t\n\r\a]+)
 <<EOF>>                  { return 0; }
 %%
 
-
-
-
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cout << "未提供源代码文件名." << std::endl;
-        return 0;
-    }
+int main(){
+    std::cout<<"processing IO"<<std::endl;
+    //yyin = "int a;\na=1;"; //yyin 默认为stdin
     yyin = fopen("../test/testcase.minic", "r");
+    //结论：使用c++风格的fileio会出事情
+    std::cout<<"call yylex"<<std::endl;
     yylex();
-    //printTokens(token);
-    std::string output = compile(token);
-    std::cout << output << std::endl;
+    std::cout<<"show tokens"<<std::endl;
+    printTokens(token);
     return 0;
 }
-

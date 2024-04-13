@@ -11,10 +11,9 @@ int main(int argc, char* argv[]) {
         std::stringstream buffer;
         buffer << inputFile.rdbuf();
         std::string sourceCode = buffer.str();
-        sourceCode.erase(std::remove(sourceCode.begin(), sourceCode.end(), ';'), sourceCode.end());
         inputFile.close();
 
-        std::deque<std::deque<Token>> token = tokenize(sourceCode);
+        //std::deque<Token>> token = tokenize(sourceCode);
         //printTokens(token);
         std::string output = compile(token);
         std::cout << output << std::endl;

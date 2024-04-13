@@ -22,7 +22,7 @@ std::deque<std::deque<Token>> tokenize(const std::string& str);
 std::string pushToken(Token t);
 std::string eval(std::deque<Token> leftExp);
 std::vector<std::string> splitString(const std::string& str, char delimiter);
-void printTokens(const std::deque<std::deque<Token>>& tokens);
+void printTokens(const std::deque<Token>& tokens);
 void printLine(const std::deque<Token>& line);
 
 //input: int a;\nint b;\nint d;\na = 1;\nb = 2;\nd = a + b;\nreturn d;
@@ -33,6 +33,8 @@ void printLine(const std::deque<Token>& line);
 //    std::string type;
 //    Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
 //};
+
+//这个函数已经被废弃，即它已经被flex的前端取代，另外，它还存在bug
 std::deque<std::deque<Token>> tokenize(const std::string& str) {
     std::deque<std::deque<Token>> lines;
     std::istringstream iss(str);
@@ -65,10 +67,20 @@ std::deque<std::deque<Token>> tokenize(const std::string& str) {
     return lines;
 }
 //"sw $zero,-4($fp)\nsw $zero,-8($fp)\nsw $zero,-12($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-4($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-8($fp)\n"
-std::string compile(std::deque<std::deque<Token>> token) {
+std::string compile(std::deque<Token> token) {
     std::string asm_src;
     while (!token.empty()) {
-        std::deque<Token> cur_line = token.front();
+        //从token提取出一行，直到出现分号
+        std::deque<Token> cur_line;
+        while(token.front().type!="semicolon"){
+            cur_line.push_back(token.front());
+            token.pop_front();
+        }
+        //dbg
+        printTokens(cur_line);
+        //弹出semicolon
+        token.pop_front();
+        //编译单行代码
         while (!cur_line.empty()) {
             //printLine(cur_line);
             if (cur_line.front().value == "return") {
@@ -138,7 +150,6 @@ std::string compile(std::deque<std::deque<Token>> token) {
                 break;//如果没有意外，全部的左值都交给eval，这样的话本行已然处理完毕
             }
         }
-        token.pop_front();
         asm_src += "\n";
     }
     return asm_src;
@@ -266,12 +277,9 @@ std::vector<std::string> splitString(const std::string& str, char delimiter) {
 }
 
 
-void printTokens(const std::deque<std::deque<Token>>& tokens) {
-    for (const auto& line : tokens) {
-        for (const auto& token : line) {
+void printTokens(const std::deque<Token>& tokens) {
+    for (const auto& token : tokens) {
             std::cout << "Value: " << token.value << ", Type: " << token.type << std::endl;
-        }
-        std::cout << std::endl;  // 打印每一行之间的空行
     }
 }
 
