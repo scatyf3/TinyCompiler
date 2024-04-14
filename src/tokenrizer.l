@@ -30,8 +30,9 @@ int main(int argc, char* argv[]) {
     }
     yyin = fopen("../test/testcase.minic", "r");
     yylex();
-    printTokens(token);
-    std::cout<<"======="<<std::endl;
+    //for debug
+    //printTokens(token);
+    //std::cout<<"======="<<std::endl;
     std::string output = compile(token);
     std::cout << output << std::endl;
     return 0;

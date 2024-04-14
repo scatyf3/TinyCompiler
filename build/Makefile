@@ -17,4 +17,4 @@ tinyCompiler:  lex.yy.cpp
 
 .PHONY: clean
 clean:
-	rm -f test_tokenrizer test_tokenrizer.cpp
+	rm -f test_tokenrizer lex.yy.cpp tinyCompiler

@@ -51,7 +51,7 @@ std::string compile(std::deque<Token> token) {
         asm_src+=".data\n"
                  "newline: .asciiz \"\\n\" # 定义一个字符串，用于输出换行。\n"
                  ".text\n"
-                 ".globl main # 声明 main 函数为全局符号，使得模拟器能识别程序的入口点\n"
+                 ".global main # 声明 main 函数为全局符号，使得模拟器能识别程序的入口点\n"
                  "main:\n"
                  "move $fp, $sp # 设置帧指针\n"
                  "addiu $sp, $sp, -0x100 # 为局部变量分配栈空间\n";
@@ -106,7 +106,7 @@ std::string compile(std::deque<Token> token) {
             //std::cout<<(cur_line.front().value == "int")<<std::endl;
             if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
-                std::cout<<"处理赋值声明"<<std::endl;
+                //std::cout<<"处理赋值声明"<<std::endl;
                 cur_line.pop_front();
                 Token symbol = cur_line.front();
                 if (symbol.type != "identifier") {
