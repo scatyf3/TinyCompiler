@@ -9,8 +9,8 @@ WORD		([^ \t\n\r\a]+)
 %%
 println_int         { token.push_back(Token(yytext, "std_function")); }
 println_string     { token.push_back(Token(yytext, "std_function")); }
-int[[:space:]]+ { token.push_back(Token(yytext, "keyword")); }
-return[[:space:]]+ { token.push_back(Token(yytext, "keyword")); }
+int   { token.push_back(Token(yytext, "keyword")); }
+return   { token.push_back(Token(yytext, "keyword")); }
 main                    { token.push_back(Token(yytext, "keyword")); }
 [{|}|}(|)]                    { token.push_back(Token(yytext, "brackets")); }
 [;]                      { token.push_back(Token(yytext, "semicolon"));}
