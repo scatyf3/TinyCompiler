@@ -7,17 +7,18 @@ std::deque<Token> token;
 WORD		([^ \t\n\r\a]+)
 
 %%
-[int][[:space:]]+        { token.push_back(Token(yytext, "keyword") ); }
-[return][[:space:]]+     { token.push_back(Token(yytext, "keyword") ); }
+[int][[:space:]]+          { token.push_back(Token(yytext, "keyword")); }
+[return][[:space:]]+       { token.push_back(Token(yytext, "keyword")); }
+^main$                    { token.push_back(Token(yytext, "keyword")); }
+[{|}|}(|)]                    { token.push_back(Token(yytext, "brackets")); }
 [;]                      { token.push_back(Token(yytext, "semicolon"));}
 [a-zA-Z]+                 { token.push_back(Token(yytext, "identifier")); }
 [0-9]+                   { token.push_back(Token(yytext, "constant")); }
-[=|+|-|*|/]              { token.push_back(Token(yytext, "operator")); }
+[=|+|-|*|/|%|<|<=|>|>=|!=|&|||^]              { token.push_back(Token(yytext, "operator")); }
+[&][&]|[|][|]            { token.push_back(Token(yytext, "operator")); }
 [[:space:]]+             ; // Ignore whitespace
 .                        ; // Ignore unrecognized characters
-<<EOF>>                  { return 0; }
 %%
-
 int main(){
     std::cout<<"processing IO"<<std::endl;
     //yyin = "int a;\na=1;"; //yyin 默认为stdin

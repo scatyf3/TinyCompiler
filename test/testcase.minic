@@ -1,3 +1,4 @@
+int main(){
 int a;
 int b;
 int d;
@@ -5,3 +6,4 @@ a = 1;
 b = 2;
 d = a + b;
 return d;
+}

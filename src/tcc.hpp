@@ -16,14 +16,15 @@ struct Token {
 
 std::vector<std::string> sign_table;
 
-std::string compile(std::deque<std::deque<Token>> token);
+std::string compile(std::deque<Token> token);
 bool isValidLeftExpression(const std::deque<Token>& leftExp);
-std::deque<std::deque<Token>> tokenize(const std::string& str);
 std::string pushToken(Token t);
 std::string eval(std::deque<Token> leftExp);
 std::vector<std::string> splitString(const std::string& str, char delimiter);
 void printTokens(const std::deque<Token>& tokens);
 void printLine(const std::deque<Token>& line);
+bool checkBrackets(const std::deque<Token> tokens);
+bool process_main(std::deque<Token> token);
 
 //input: int a;\nint b;\nint d;\na = 1;\nb = 2;\nd = a + b;\nreturn d;
 //按照空格分token，按照\n分行
@@ -34,41 +35,17 @@ void printLine(const std::deque<Token>& line);
 //    Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
 //};
 
-//这个函数已经被废弃，即它已经被flex的前端取代，另外，它还存在bug
-std::deque<std::deque<Token>> tokenize(const std::string& str) {
-    std::deque<std::deque<Token>> lines;
-    std::istringstream iss(str);
-    std::string line;
-    while (std::getline(iss, line, '\n')) {
-        std::deque<Token> tokens;
-        std::istringstream lineIss(line);
-        std::string token;
-        while (lineIss >> token) {
-            std::string type = "unknown";
-            // Check if the token is a keyword
-            if (token == "int" || token == "return")
-                type = "keyword";
-                // Check if the token is a numeric constant
-            else if (std::all_of(token.begin(), token.end(), ::isdigit))
-                type = "constant";
-                // Check if the token is an identifier (variable name)
-            else if (std::isalpha(token[0]) || token[0] == '_')
-                type = "identifier";
-                // Check if the token is an operator
-            else if (token == "=" || token == "+"||token == "*" || token == "/" || token == "-")
-                type = "operator";
-                // Check if the token is a semicolon
-            else if (token == ";")
-                {}//DO NOTHING
-            tokens.emplace_back(token, type);
-        }
-        lines.push_back(tokens);
-    }
-    return lines;
-}
 //"sw $zero,-4($fp)\nsw $zero,-8($fp)\nsw $zero,-12($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-4($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-8($fp)\n"
 std::string compile(std::deque<Token> token) {
     std::string asm_src;
+    std::deque<Token> prev_code;//在main函数入口之前的一些代码
+    while(token.front().value!="main"){
+        prev_code.push_back(token.front());
+        token.pop_back();
+    }
+    checkBrackets(token);
+    process_main(token);
+    //直到作为入口点
     while (!token.empty()) {
         //从token提取出一行，直到出现分号
         std::deque<Token> cur_line;
@@ -288,4 +265,73 @@ void printLine(const std::deque<Token>& line) {
         std::cout << "Value: " << token.value << ", Type: " << token.type << std::endl;
     }
     std::cout << std::endl; // 打印每一行之间的空行
+}
+bool process_main(std::deque<Token> token) {
+    // 检查当前 token 是否为 "main"
+    if (!token.empty() && token.front().value == "main") {
+        token.pop_front(); // 弹出 "main" token
+    } else {
+        return false; // "main" 不匹配，返回 false
+    }
+
+    // 检查下一个 token 是否为 "("
+    if (!token.empty() && token.front().value == "(") {
+        token.pop_front(); // 弹出 "(" token
+    } else {
+        return false; // "(" 不匹配，返回 false
+    }
+
+    // 检查参数列表是否为 "argc, argv"->TODO：更仔细地了解规范
+    if (!token.empty() && token.front().type == "identifier" && token.front().value == "argc") {
+        token.pop_front(); // 弹出 "argc" token
+    } else {
+        return false; // "argc" 不匹配，返回 false
+    }
+
+    if (!token.empty() && token.front().type == "identifier" && token.front().value == "argv") {
+        token.pop_front(); // 弹出 "argv" token
+    } else {
+        return false; // "argv" 不匹配，返回 false
+    }
+
+    // 检查下一个 token 是否为 ")"
+    if (!token.empty() && token.front().value == ")") {
+        token.pop_front(); // 弹出 ")" token
+    } else {
+        return false; // ")" 不匹配，返回 false
+    }
+
+    // 检查下一个 token 是否为 "{"
+    if (!token.empty() && token.front().value == "{") {
+        token.pop_front(); // 弹出 "{" token
+    } else {
+        return false; // "{" 不匹配，返回 false
+    }
+
+    return true; // 所有检查通过，返回 true
+}
+
+bool checkBrackets(const std::deque<Token> tokens) {
+    std::stack<Token> stack;
+
+    for (const Token& token : tokens) {
+        if (token.type == "brackets") {
+            if (token.value == "{" || token.value == "(") {
+                stack.push(token);
+            } else { // token.value == "}" or token.value == ")"
+                if (stack.empty()) {
+                    return false; // 没有匹配的左括号
+                }
+                Token openingBracket = stack.top();
+                stack.pop();
+
+                if ((token.value == "}" && openingBracket.value != "{") ||
+                    (token.value == ")" && openingBracket.value != "(")) {
+                    return false; // 左右括号类型不匹配
+                }
+            }
+        }
+    }
+
+    return stack.empty(); // 所有左括号都有对应的右括号
 }

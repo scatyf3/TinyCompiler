@@ -10,7 +10,7 @@ WORD		([^ \t\n\r\a]+)
 [int][[:space:]]+          { token.push_back(Token(yytext, "keyword")); }
 [return][[:space:]]+       { token.push_back(Token(yytext, "keyword")); }
 ^main$                    { token.push_back(Token(yytext, "keyword")); }
-[{|}]                    { token.push_back(Token(yytext, "brackets")); }
+[{|}|}(|)]                    { token.push_back(Token(yytext, "brackets")); }
 [;]                      { token.push_back(Token(yytext, "semicolon"));}
 [a-zA-Z]+                 { token.push_back(Token(yytext, "identifier")); }
 [0-9]+                   { token.push_back(Token(yytext, "constant")); }
