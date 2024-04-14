@@ -13,7 +13,7 @@ lex.yy.cpp: ../src/tokenrizer.l
 	flex -o $@ $^
 
 tinyCompiler:  lex.yy.cpp
-	g++ -o $@ $^ -std=c++14
+	g++ -o $@ $^ -std=c++14 -g
 
 .PHONY: clean
 clean:

@@ -82,7 +82,7 @@ int main(){
 
     /*
      * CASE3:PRINT
-     */
+
     code.push_back(Token("int", "keyword"));
     code.push_back(Token("main", "keyword"));
     code.push_back(Token("(", "brackets"));
@@ -122,6 +122,50 @@ int main(){
     code.push_back((Token("return","keyword")));
     code.push_back(Token("0","constant"));
     code.push_back(Token(";","semicolon"));
+    code.push_back(Token("}", "brackets"));
+     */
+
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("main", "keyword"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token("{", "brackets"));
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("d", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("1", "constant"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("2", "constant"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("d", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token("+", "operator"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("return", "keyword"));
+    code.push_back(Token("d", "identifier"));
+    code.push_back(Token(";", "semicolon"));
     code.push_back(Token("}", "brackets"));
 
     const std::string asm_src = compile(code);

@@ -54,7 +54,7 @@ std::string compile(std::deque<Token> token) {
                  ".globl main # 声明 main 函数为全局符号，使得模拟器能识别程序的入口点\n"
                  "main:\n"
                  "move $fp, $sp # 设置帧指针\n"
-                 "addiu $sp, $sp, -0x100 # 为局部变量分配栈空间";
+                 "addiu $sp, $sp, -0x100 # 为局部变量分配栈空间\n";
     }
     else{
         std::cout<<"cannot find program's entrance point"<<std::endl;
@@ -68,7 +68,7 @@ std::string compile(std::deque<Token> token) {
             token.pop_front();
         }
         //dbg
-        printTokens(cur_line);
+        //printTokens(cur_line);
         //弹出semicolon
         token.pop_front();
         //编译单行代码

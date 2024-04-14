@@ -20,7 +20,6 @@ main                    { token.push_back(Token(yytext, "keyword")); }
 [&][&]|[|][|]            { token.push_back(Token(yytext, "operator")); }
 [[:space:]]+             ; // Ignore whitespace
 .                        ; // Ignore unrecognized characters
-
 <<EOF>>                  { return 0; }
 %%
 
