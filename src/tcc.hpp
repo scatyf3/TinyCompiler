@@ -81,6 +81,7 @@ std::string compile(std::deque<Token> token) {
                 if (val_to_return.type == "constant") {
                     asm_src += "li $v0,";
                     asm_src += val_to_return.value;
+                    asm_src += "\n";
                 } else {
                     asm_src += "lw $v0,";
                     auto it = std::find(sign_table.begin(), sign_table.end(),
@@ -92,14 +93,13 @@ std::string compile(std::deque<Token> token) {
                     } else {
                         asm_src += "Compile Error: Undefined Symbol";
                     }
-                    asm_src += "($fp)";
+                    asm_src += "($fp)\n";
                 }
                 asm_src+="move $v1, $v0 # 设置返回值\n"
                          "li $v0, 10 # 设置系统调用号为 10，即退出程序\n"
                          "syscall # 系统调用";
                 break;
             }
-            if(cur_line.front().value == "")
             if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
                 cur_line.pop_front();
@@ -142,6 +142,47 @@ std::string compile(std::deque<Token> token) {
                 }
                 asm_src += "($fp)";
                 break;//如果没有意外，全部的左值都交给eval，这样的话本行已然处理完毕
+            }
+            if(cur_line.front().type == "std_function"){
+                //系统库函数
+                //check and pop left bracket
+                //弹出函数
+                cur_line.pop_front();
+                //弹出左括号
+                if(cur_line.front().value!="("){
+                    asm_src += "Compile Error: UB in function call";
+                }
+                cur_line.pop_front();
+                //弹出参数
+                Token val_to_print = cur_line.front();
+                cur_line.pop_front();
+                //暂时只处理打印int
+                if(val_to_print.type!="identifier" && val_to_print.type!="constant" ){
+                    asm_src += "Compile Error: println_int argument error";
+                }
+                if(val_to_print.type=="identifier"){
+                    asm_src += "lw $v0,";
+                    auto it = std::find(sign_table.begin(), sign_table.end(),
+                                        val_to_print.value);
+                    if (it != sign_table.end()) {
+                        int index = std::distance(sign_table.begin(), it);
+                        int result = (index + 1) * -4;
+                        asm_src += std::to_string(result);
+                    } else {
+                        asm_src += "Compile Error: Undefined Symbol";
+                    }
+                    asm_src += "($fp)\n";
+                }else{
+                    asm_src += "li $a0,";
+                    asm_src += val_to_print.value;
+                }
+                asm_src+="li $v0, 1 # 设置系统调用号为 1，即打印整数\n"
+                         "syscall # 系统调用\n"
+                         "li $v0, 4 # 设置系统调用号为 4，即打印字符串\n"
+                         "la $a0, newline # 准备系统调用参数\n"
+                         "syscall # 系统调用";
+                //弹出右括号
+                cur_line.pop_front();
             }
         }
         asm_src += "\n";
@@ -210,8 +251,8 @@ bool isValidLeftExpression(const std::deque<Token>& leftExp) {
     if (leftExp.empty()) {
         return false;
     }
-    if (leftExp.front().type != "constant" &&
-        leftExp.front().type != "identifier") {
+    if (leftExp.front().type != "constant" && leftExp.front().type != "identifier") {
+        std::cerr<<"type error:"<<leftExp.front().type<<std::endl;
         return false;
     }
     for (size_t i = 1; i < leftExp.size() - 1; ++i) {
