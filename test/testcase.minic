@@ -4,6 +4,9 @@ int b;
 int d;
 a = 1;
 b = 2;
+println_int(a);
+println_int(b);
 d = a + b;
 return d;
+
 }

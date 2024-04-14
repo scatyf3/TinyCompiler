@@ -99,6 +99,7 @@ std::string compile(std::deque<Token> token) {
                          "syscall # 系统调用";
                 break;
             }
+            if(cur_line.front().value == "")
             if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
                 cur_line.pop_front();
@@ -149,37 +150,24 @@ std::string compile(std::deque<Token> token) {
 }
 
 std::string eval(std::deque<Token> leftExp) {
-    // a fuction that evaluate left expression
     std::string asm_src = "";
     if (!isValidLeftExpression(leftExp)) {
         asm_src += "Syntax Error: Invalid Left Exp";
     }
-    // load ops and values into stack
-    //lw $v0, -4($fp) 
-    //sw $v0, 0($sp)
-    //addiu $sp, $sp, -4
-    //lw $v0, -8($fp)
-    //sw $v0, 0($sp)
-    //addiu $sp, $sp, -4
-    // calculate
-    // lw $t1, 4($sp)
-    // lw $t0, 8($sp)
-    // add $t0, $t0, $t1
-    asm_src+=pushToken(leftExp.front());
+
+    asm_src += pushToken(leftExp.front());
     leftExp.pop_front();
-    while(!leftExp.empty()){
-        //value 1
+
+    while (!leftExp.empty()) {
         Token curOp = leftExp.front();
         leftExp.pop_front();
-        //value 2
-        asm_src+=pushToken(leftExp.front());
+
+        asm_src += pushToken(leftExp.front());
         leftExp.pop_front();
 
-        //calculate
         asm_src += "lw $t1, " + std::to_string(4) + "($sp)\n";
         asm_src += "lw $t0, " + std::to_string(8) + "($sp)\n";
 
-        // 翻译为不同的汇编指令
         if (curOp.value == "+") {
             asm_src += "add $t0, $t0, $t1\n";
         } else if (curOp.value == "-") {
@@ -188,14 +176,33 @@ std::string eval(std::deque<Token> leftExp) {
             asm_src += "mul $t0, $t0, $t1\n";
         } else if (curOp.value == "/") {
             asm_src += "div $t0, $t0, $t1\n";
+        } else if (curOp.value == "%") {
+            asm_src += "rem $t0, $t0, $t1\n";
+        } else if (curOp.value == "<") {
+            asm_src += "slt $t0, $t0, $t1\n";
+        } else if (curOp.value == "<=") {
+            asm_src += "sle $t0, $t0, $t1\n";
+        } else if (curOp.value == ">") {
+            asm_src += "sgt $t0, $t0, $t1\n";
+        } else if (curOp.value == ">=") {
+            asm_src += "sge $t0, $t0, $t1\n";
+        } else if (curOp.value == "==") {
+            asm_src += "seq $t0, $t0, $t1\n";
+        } else if (curOp.value == "!=") {
+            asm_src += "sne $t0, $t0, $t1\n";
+        } else if (curOp.value == "&") {
+            asm_src += "and $t0, $t0, $t1\n";
+        } else if (curOp.value == "|") {
+            asm_src += "or $t0, $t0, $t1\n";
+        } else if (curOp.value == "^") {
+            asm_src += "xor $t0, $t0, $t1\n";
         }
-        asm_src+="sw $t0, 8($sp)\n";
-        asm_src+="addiu $sp, $sp, 4\n";
+        asm_src += "sw $t0, 8($sp)\n";
+        asm_src += "addiu $sp, $sp, 4\n";
     }
+    asm_src += "lw $v0, 4($sp)\n";
+    asm_src += "addiu $sp, $sp, 4\n";
 
-    //复原stack,储存回fp
-    asm_src+="lw $v0, 4($sp)\n";
-    asm_src +="addiu $sp, $sp, 4\n";
     return asm_src;
 }
 

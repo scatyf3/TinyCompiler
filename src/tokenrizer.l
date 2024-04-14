@@ -7,12 +7,14 @@ std::deque<Token> token;
 WORD		([^ \t\n\r\a]+)
 
 %%
-[int][[:space:]]+          { token.push_back(Token(yytext, "keyword")); }
-[return][[:space:]]+       { token.push_back(Token(yytext, "keyword")); }
-^main$                    { token.push_back(Token(yytext, "keyword")); }
+println_int         { token.push_back(Token(yytext, "std_function")); }
+println_string     { token.push_back(Token(yytext, "std_function")); }
+int[[:space:]]+ { token.push_back(Token(yytext, "keyword")); }
+return[[:space:]]+ { token.push_back(Token(yytext, "keyword")); }
+main                    { token.push_back(Token(yytext, "keyword")); }
 [{|}|}(|)]                    { token.push_back(Token(yytext, "brackets")); }
 [;]                      { token.push_back(Token(yytext, "semicolon"));}
-[a-zA-Z]+                 { token.push_back(Token(yytext, "identifier")); }
+[A-Za-z_][0-9A-Za-z_]*                 { token.push_back(Token(yytext, "identifier")); }
 [0-9]+                   { token.push_back(Token(yytext, "constant")); }
 [=|+|-|*|/|%|<|<=|>|>=|!=|&|||^]              { token.push_back(Token(yytext, "operator")); }
 [&][&]|[|][|]            { token.push_back(Token(yytext, "operator")); }
