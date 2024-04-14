@@ -24,7 +24,7 @@ std::vector<std::string> splitString(const std::string& str, char delimiter);
 void printTokens(const std::deque<Token>& tokens);
 void printLine(const std::deque<Token>& line);
 bool checkBrackets(const std::deque<Token> tokens);
-bool process_main(std::deque<Token> token);
+bool process_main(std::deque<Token>* token);
 
 //input: int a;\nint b;\nint d;\na = 1;\nb = 2;\nd = a + b;\nreturn d;
 //按照空格分token，按照\n分行
@@ -41,12 +41,26 @@ std::string compile(std::deque<Token> token) {
     std::deque<Token> prev_code;//在main函数入口之前的一些代码
     while(token.front().value!="main"){
         prev_code.push_back(token.front());
-        token.pop_back();
+        token.pop_front();
     }
-    checkBrackets(token);
-    process_main(token);
+    if(!checkBrackets(token)){
+        std::cout<<"Brackets match error"<<std::endl;
+    }
+    if(process_main(&token)){
+        // init function
+        asm_src+=".data\n"
+                 "newline: .asciiz \"\\n\" # 定义一个字符串，用于输出换行。\n"
+                 ".text\n"
+                 ".globl main # 声明 main 函数为全局符号，使得模拟器能识别程序的入口点\n"
+                 "main:\n"
+                 "move $fp, $sp # 设置帧指针\n"
+                 "addiu $sp, $sp, -0x100 # 为局部变量分配栈空间";
+    }
+    else{
+        std::cout<<"cannot find program's entrance point"<<std::endl;
+    }
     //直到作为入口点
-    while (!token.empty()) {
+    while (!token.empty() && token.front().value!="}") {
         //从token提取出一行，直到出现分号
         std::deque<Token> cur_line;
         while(token.front().type!="semicolon"){
@@ -80,7 +94,9 @@ std::string compile(std::deque<Token> token) {
                     }
                     asm_src += "($fp)";
                 }
-                //asm_src += "lw $v0, -12($fp)";
+                asm_src+="move $v1, $v0 # 设置返回值\n"
+                         "li $v0, 10 # 设置系统调用号为 10，即退出程序\n"
+                         "syscall # 系统调用";
                 break;
             }
             if (cur_line.front().value == "int") { //✅
@@ -175,7 +191,6 @@ std::string eval(std::deque<Token> leftExp) {
         }
         asm_src+="sw $t0, 8($sp)\n";
         asm_src+="addiu $sp, $sp, 4\n";
-
     }
 
     //复原stack,储存回fp
@@ -266,50 +281,48 @@ void printLine(const std::deque<Token>& line) {
     }
     std::cout << std::endl; // 打印每一行之间的空行
 }
-bool process_main(std::deque<Token> token) {
-    // 检查当前 token 是否为 "main"
-    if (!token.empty() && token.front().value == "main") {
-        token.pop_front(); // 弹出 "main" token
+bool process_main(std::deque<Token>* token) {
+    if (!token->empty() && token->front().value == "main") {
+        token->pop_front(); // 弹出 "main" token
     } else {
         return false; // "main" 不匹配，返回 false
     }
 
-    // 检查下一个 token 是否为 "("
-    if (!token.empty() && token.front().value == "(") {
-        token.pop_front(); // 弹出 "(" token
+    if (!token->empty() && token->front().value == "(") {
+        token->pop_front(); // 弹出 "(" token
     } else {
         return false; // "(" 不匹配，返回 false
     }
+    /*
 
-    // 检查参数列表是否为 "argc, argv"->TODO：更仔细地了解规范
-    if (!token.empty() && token.front().type == "identifier" && token.front().value == "argc") {
-        token.pop_front(); // 弹出 "argc" token
+    if (!token->empty() && token->front().value == "identifier" && token->front().value== "argc") {
+        token->pop_front(); // 弹出 "argc" token
     } else {
         return false; // "argc" 不匹配，返回 false
     }
 
-    if (!token.empty() && token.front().type == "identifier" && token.front().value == "argv") {
-        token.pop_front(); // 弹出 "argv" token
+    if (!token->empty() && token->front().value == "identifier" && token->front().value == "argv") {
+        token->pop_front(); // 弹出 "argv" token
     } else {
         return false; // "argv" 不匹配，返回 false
     }
+     */
 
-    // 检查下一个 token 是否为 ")"
-    if (!token.empty() && token.front().value == ")") {
-        token.pop_front(); // 弹出 ")" token
+    if (!token->empty() && token->front().value == ")") {
+        token->pop_front(); // 弹出 ")" token
     } else {
         return false; // ")" 不匹配，返回 false
     }
 
-    // 检查下一个 token 是否为 "{"
-    if (!token.empty() && token.front().value == "{") {
-        token.pop_front(); // 弹出 "{" token
+    if (!token->empty() && token->front().value == "{") {
+        token->pop_front(); // 弹出 "{" token
     } else {
         return false; // "{" 不匹配，返回 false
     }
 
     return true; // 所有检查通过，返回 true
 }
+
 
 bool checkBrackets(const std::deque<Token> tokens) {
     std::stack<Token> stack;

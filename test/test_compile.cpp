@@ -19,6 +19,7 @@ int main(){
     code.push_back(Token(";", "semicolon"));
     code.push_back((Token("return","keyword")));
     code.push_back(Token("0","constant"));
+    code.push_back(Token(";","semicolon"));
     code.push_back((Token("}","brackets")));
     const std::string asm_src = compile(code);
     
