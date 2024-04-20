@@ -14,7 +14,7 @@ struct Token {
     Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
 };
 
-extern std::vector<std::string> sign_table;
+std::vector<std::string> sign_table;
 
 std::string compile(std::deque<Token> token);
 bool isValidLeftExpression(const std::deque<Token>& leftExp);
