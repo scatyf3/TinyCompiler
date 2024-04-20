@@ -14,7 +14,7 @@ struct Token {
     Token(std::string  val, std::string  t) : value(std::move(val)), type(std::move(t)) {}
 };
 
-std::vector<std::string> sign_table;
+extern std::vector<std::string> sign_table;
 
 std::string compile(std::deque<Token> token);
 bool isValidLeftExpression(const std::deque<Token>& leftExp);
@@ -49,12 +49,12 @@ std::string compile(std::deque<Token> token) {
     if(process_main(&token)){
         // init function
         asm_src+=".data\n"
-                 "newline: .asciiz \"\\n\" # 定义一个字符串，用于输出换行。\n"
+                 "newline: .asciiz \"\\n\"\n"
                  ".text\n"
-                 ".global main # 声明 main 函数为全局符号，使得模拟器能识别程序的入口点\n"
+                 ".globl main\n"
                  "main:\n"
-                 "move $fp, $sp # 设置帧指针\n"
-                 "addiu $sp, $sp, -0x100 # 为局部变量分配栈空间\n";
+                 "move $fp, $sp\n"
+                 "addiu $sp, $sp, -0x100\n";
     }
     else{
         std::cout<<"cannot find program's entrance point"<<std::endl;
@@ -97,9 +97,9 @@ std::string compile(std::deque<Token> token) {
                     }
                     asm_src += "($fp)\n";
                 }
-                asm_src+="move $v1, $v0 # 设置返回值\n"
-                         "li $v0, 10 # 设置系统调用号为 10，即退出程序\n"
-                         "syscall # 系统调用";
+                asm_src+="move $v1, $v0\n"
+                         "li $v0, 10\n"
+                         "syscall\n";
                 break;
             }
             //std::cout<<cur_line.front().value<<std::endl;
@@ -166,7 +166,7 @@ std::string compile(std::deque<Token> token) {
                     asm_src += "Compile Error: println_int argument error";
                 }
                 if(val_to_print.type=="identifier"){
-                    asm_src += "lw $v0,";
+                    asm_src += "lw $a0,"; //系统函数的参数是a系列寄存器
                     auto it = std::find(sign_table.begin(), sign_table.end(),
                                         val_to_print.value);
                     if (it != sign_table.end()) {
