@@ -24,7 +24,7 @@ std::deque<Token> token;
 "("|")"|"{"|"}"                    { token.push_back(Token(yytext, "brackets")); }
 [0-9]+                { token.push_back(Token(yytext, "constant")); }
 [A-Za-z_][0-9A-Za-z_]*                   { token.push_back(Token(yytext, "identifier")); }
-[\t\r\a]+          { /* ignore all spaces */               }
+[ \n\t\r\a]+          { /* ignore all spaces */               }
 <<EOF>>                  { return 0; }
 %%
 

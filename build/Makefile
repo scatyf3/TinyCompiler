@@ -9,6 +9,8 @@ test_tokenrizer.cpp: ../test/test_flex_rule.l
 	g++ -o test_tokenrizer test_tokenrizer.cpp -std=c++14 -fsanitize=address,undefined
 	./test_tokenrizer
 
+
+
 lex.yy.cpp: ../src/tokenrizer.l
 	flex -o $@ $^
 

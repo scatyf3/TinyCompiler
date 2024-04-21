@@ -1,7 +1,6 @@
 %{
 #include "../src/tcc.hpp"
 std::deque<Token> token;
-int cur_line_num = 1;
 void lex_error(char* msg, int line);
 %}
 
@@ -27,19 +26,19 @@ void lex_error(char* msg, int line);
 "("|")"|"{"|"}"                    { token.push_back(Token(yytext, "brackets")); }
 [0-9]+                { token.push_back(Token(yytext, "constant")); }
 [A-Za-z_][0-9A-Za-z_]*                   { token.push_back(Token(yytext, "identifier")); }
-[\n]                { cur_line_num++;                       }
-[\t\r\a]+          { /* ignore all spaces */               }
+[ \n\t\r\a]+          { /* ignore all spaces */               }
 <<EOF>>                  { return 0; }
 %%
 
 
 int main(){
     std::cout<<"processing IO"<<std::endl;
-    yyin = fopen("../test/cases_2/e05.c", "r");
+    yyin = fopen("../test/cases_2/e02.c", "r");
     //结论：使用c++风格的fileio会出事情
-    std::cout<<"call yylex"<<std::endl;
-    yylex();
-    std::cout<<"show tokens"<<std::endl;
+    printf("call yylex\n");
+    yylex(); //会打印出额外的空格和换行？？？
+    printf("show tokens\n");
+    fflush(stdout);
     printTokens(token);
     return 0;
 }
