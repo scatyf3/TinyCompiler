@@ -124,7 +124,7 @@ int main(){
     code.push_back(Token(";","semicolon"));
     code.push_back(Token("}", "brackets"));
      */
-
+/*
     code.push_back(Token("int", "keyword"));
     code.push_back(Token("main", "keyword"));
     code.push_back(Token("(", "brackets"));
@@ -167,10 +167,107 @@ int main(){
     code.push_back(Token("d", "identifier"));
     code.push_back(Token(";", "semicolon"));
     code.push_back(Token("}", "brackets"));
+*/
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("main", "keyword"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token("{", "brackets"));
 
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("int", "keyword"));
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("114", "constant"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("514", "constant"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token("%", "operator"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("a", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token("=", "operator"));
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token("%", "operator"));
+    code.push_back(Token("mod", "identifier"));
+    code.push_back(Token(";", "semicolon"));
+    code.push_back(Token("println_int", "std_function"));
+    code.push_back(Token("(", "brackets"));
+    code.push_back(Token("b", "identifier"));
+    code.push_back(Token(")", "brackets"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("return", "keyword"));
+    code.push_back(Token("0", "constant"));
+    code.push_back(Token(";", "semicolon"));
+
+    code.push_back(Token("}", "brackets"));
     const std::string asm_src = compile(code);
-    
+
     std::cout<<asm_src<<std::endl;
 
     return 0;
 }
+
+/*
+ * int main() {
+  int a;
+  int b;
+  int mod;
+
+  a = 114;
+  println_int(a);
+  b = 514;
+  println_int(b);
+  mod = a % b;
+  println_int(mod);
+  a = mod;
+  println_int(a);
+  b = mod % mod;
+  println_int(b);
+
+  return 0;
+}
+
+ */
