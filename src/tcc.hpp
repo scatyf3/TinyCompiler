@@ -104,7 +104,7 @@ std::string compile(std::deque<Token> token) {
             }
             //std::cout<<cur_line.front().value<<std::endl;
             //std::cout<<(cur_line.front().value == "int")<<std::endl;
-            if (cur_line.front().value == "int") { //✅
+            else if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
                 //std::cout<<"处理赋值声明"<<std::endl;
                 cur_line.pop_front();
@@ -127,7 +127,7 @@ std::string compile(std::deque<Token> token) {
                     asm_src += "Compile Error: Declear error";
                 }
             }
-            if (cur_line.front().type == "identifier") {
+            else if (cur_line.front().type == "identifier") {
                 // 赋值
                 Token symbol =cur_line.front();
                 cur_line.pop_front();
@@ -148,7 +148,7 @@ std::string compile(std::deque<Token> token) {
                 asm_src += "($fp)";
                 break;//如果没有意外，全部的左值都交给eval，这样的话本行已然处理完毕
             }
-            if(cur_line.front().type == "std_function"){
+            else if(cur_line.front().type == "std_function"){
                 //系统库函数
                 //check and pop left bracket
                 //弹出函数
