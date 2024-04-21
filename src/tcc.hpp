@@ -185,7 +185,7 @@ std::string compile(std::deque<Token> token) {
                          "syscall # 系统调用\n"
                          "li $v0, 4 # 设置系统调用号为 4，即打印字符串\n"
                          "la $a0, newline # 准备系统调用参数\n"
-                         "syscall # 系统调用";
+                         "syscall # 系统调用\n";
                 //弹出右括号
                 cur_line.pop_front();
             }
