@@ -44,9 +44,9 @@ std::string compile(std::deque<Token> token) {
         prev_code.push_back(token.front());
         token.pop_front();
     }
-    if(!checkBrackets(token)){
-        std::cout<<"Brackets match error"<<std::endl;
-    }
+    //if(!checkBrackets(token)){
+    //    std::cout<<"Brackets match error"<<std::endl;
+    //}
     if(process_main(&token)){
         // init function
         asm_src+=".data\n"
@@ -339,6 +339,8 @@ void printLine(const std::deque<Token>& line) {
     std::cout << std::endl; // 打印每一行之间的空行
 }
 bool process_main(std::deque<Token>* token) {
+    //int main ( ) {  ->size == 5
+    //int main(int argc, int argv){ size == 10
     if (!token->empty() && token->front().value == "main") {
         token->pop_front(); // 弹出 "main" token
     } else {
@@ -351,21 +353,35 @@ bool process_main(std::deque<Token>* token) {
         return false; // "(" 不匹配，返回 false
     }
 
-    if (!token->empty() && token->front().value == "identifier" && token->front().value== "argc") {
-        token->pop_front(); // 弹出 "argc" token
-        if (!token->empty() && token->front().value == "identifier" && token->front().value == "argv") {
+    if(!token->empty() && token->front().value == "int"){
+        token->pop_front();
+        if (!token->empty() &&token->front().value== "argc") {
+            token->pop_front(); // 弹出 "argc" token
+        }else{
+            return false;
+        }
+        if(!token->empty() && token->front().value == ","){
+            token->pop_front();
+        }
+        else{
+            return false;
+        }
+        if (!token->empty() &&token->front().value== "int") {
+            token->pop_front(); // 弹出 "argc" token
+        }else{
+            return false;
+        }
+        if (!token->empty() && token->front().value == "argv") {
             token->pop_front(); // 弹出 "argv" token
         } else {
             return false; // "argv" 不匹配，返回 false
         }
     }
-
     if (!token->empty() && token->front().value == ")") {
         token->pop_front(); // 弹出 ")" token
     } else {
         return false; // ")" 不匹配，返回 false
     }
-
     if (!token->empty() && token->front().value == "{") {
         token->pop_front(); // 弹出 "{" token
     } else {

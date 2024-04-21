@@ -8,6 +8,7 @@ void lex_error(char* msg, int line);
 
 
 %%
+","                       { token.push_back(Token(yytext, "comma"));}
 [+*-/%=!<>]           { token.push_back(Token(yytext, "operator")); }
 "|"                { token.push_back(Token(yytext, "operator"));}
 "^"                { token.push_back(Token(yytext, "operator"));}
@@ -27,13 +28,14 @@ void lex_error(char* msg, int line);
 [0-9]+                { token.push_back(Token(yytext, "constant")); }
 [A-Za-z_][0-9A-Za-z_]*                   { token.push_back(Token(yytext, "identifier")); }
 [ \n\t\r\a]+          { /* ignore all spaces */               }
+.                     {/*printf("未识别的字符 %c，ASCII 编码：%d\n", *yytext, *yytext); */ }
 <<EOF>>                  { return 0; }
 %%
 
 
 int main(){
     std::cout<<"processing IO"<<std::endl;
-    yyin = fopen("../test/cases_2/e02.c", "r");
+    yyin = fopen("../test/cases_2/e114.c", "r");
     //结论：使用c++风格的fileio会出事情
     printf("call yylex\n");
     yylex(); //会打印出额外的空格和换行？？？

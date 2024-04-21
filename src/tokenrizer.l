@@ -6,6 +6,7 @@ std::deque<Token> token;
 %option noyywrap
 
 %%
+","                       { token.push_back(Token(yytext, "comma"));}
 [+*-/%=!<>]           { token.push_back(Token(yytext, "operator")); }
 "|"                { token.push_back(Token(yytext, "operator"));}
 "^"                { token.push_back(Token(yytext, "operator"));}
