@@ -17,6 +17,7 @@ for file in "$testcase_folder"/*.c; do
     log_file="$output_folder/case_2.log"
 
     echo "Running testcase: $file"
+    # ./../submission/Compilerlab2 "$file" > "$asm_file"
     ./tinyCompiler "$file" > "$asm_file"
     spim -file "../out/case_2/$filename.asm" >> "$log_file"
     echo "---------------------------------------"

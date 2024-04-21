@@ -75,7 +75,7 @@ std::string compile(std::deque<Token> token) {
         //编译单行代码
         //printLine(cur_line);
         while (!cur_line.empty()) {
-            printLine(cur_line);
+            //printLine(cur_line);
             //debug std::cout<<asm_src<<std::endl;
             //std::cout<<cur_line.front().value<<std::endl;
             if (cur_line.front().value == "return") {
@@ -108,12 +108,12 @@ std::string compile(std::deque<Token> token) {
             //std::cout<<(cur_line.front().value == "int")<<std::endl;
             else if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
-                std::cout<<"处理赋值声明"<<std::endl;
+                //std::cout<<"处理赋值声明"<<std::endl;
                 cur_line.pop_front();
                 Token symbol = cur_line.front();
                 if (symbol.type != "identifier") {
                     asm_src += "Compile Error: Unknown Syntax";
-                    std::cout<<"Compile Error: Unknown Syntax"<<std::endl;
+                    //std::cout<<"Compile Error: Unknown Syntax"<<std::endl;
                 }
                 sign_table.push_back(symbol.value);
                 cur_line.pop_front();
@@ -128,7 +128,7 @@ std::string compile(std::deque<Token> token) {
                 asm_src += "($fp)";
                 if (!cur_line.empty()) {
                     asm_src += "Compile Error: Declear error";
-                    std::cout<<"Compile Error: Declear error"<<std::endl;
+                    //std::cout<<"Compile Error: Declear error"<<std::endl;
                 }
             }
             else if (cur_line.front().type == "identifier") {
