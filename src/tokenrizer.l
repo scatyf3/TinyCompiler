@@ -25,6 +25,7 @@ std::deque<Token> token;
 [0-9]+                { token.push_back(Token(yytext, "constant")); }
 [A-Za-z_][0-9A-Za-z_]*                   { token.push_back(Token(yytext, "identifier")); }
 [ \n\t\r\a]+          { /* ignore all spaces */               }
+.                     { printf("未识别的字符 %c，ASCII 编码：%d\n", *yytext, *yytext); }
 <<EOF>>                  { return 0; }
 %%
 
@@ -38,8 +39,8 @@ int main(int argc, char* argv[]) {
     yyin = fopen(filename.c_str(), "r");  // 使用文件名打开文件
     yylex();
     // for debug
-    // printTokens(token);
-    // std::cout << "=======" << std::endl;
+    //printTokens(token);
+    //std::cout << "=======" << std::endl;
     std::string output = compile(token);
     std::cout << output << std::endl;
     return 0;

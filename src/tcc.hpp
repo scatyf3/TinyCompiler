@@ -37,6 +37,7 @@ bool process_main(std::deque<Token>* token);
 
 //"sw $zero,-4($fp)\nsw $zero,-8($fp)\nsw $zero,-12($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-4($fp)\nlw $v0, 4($sp)\naddiu $sp, $sp, 4\nsw $v0,-8($fp)\n"
 std::string compile(std::deque<Token> token) {
+    //printLine(token);
     std::string asm_src;
     std::deque<Token> prev_code;//在main函数入口之前的一些代码
     while(token.front().value!="main"){
@@ -72,8 +73,9 @@ std::string compile(std::deque<Token> token) {
         //弹出semicolon
         token.pop_front();
         //编译单行代码
+        //printLine(cur_line);
         while (!cur_line.empty()) {
-            //printLine(cur_line);
+            printLine(cur_line);
             //debug std::cout<<asm_src<<std::endl;
             //std::cout<<cur_line.front().value<<std::endl;
             if (cur_line.front().value == "return") {
@@ -100,17 +102,18 @@ std::string compile(std::deque<Token> token) {
                 asm_src+="move $v1, $v0\n"
                          "li $v0, 10\n"
                          "syscall\n";
-                break;
+                return asm_src;
             }
             //std::cout<<cur_line.front().value<<std::endl;
             //std::cout<<(cur_line.front().value == "int")<<std::endl;
             if (cur_line.front().value == "int") { //✅
                 // 声明 eg: int a;
-                //std::cout<<"处理赋值声明"<<std::endl;
+                std::cout<<"处理赋值声明"<<std::endl;
                 cur_line.pop_front();
                 Token symbol = cur_line.front();
                 if (symbol.type != "identifier") {
                     asm_src += "Compile Error: Unknown Syntax";
+                    std::cout<<"Compile Error: Unknown Syntax"<<std::endl;
                 }
                 sign_table.push_back(symbol.value);
                 cur_line.pop_front();
@@ -125,6 +128,7 @@ std::string compile(std::deque<Token> token) {
                 asm_src += "($fp)";
                 if (!cur_line.empty()) {
                     asm_src += "Compile Error: Declear error";
+                    std::cout<<"Compile Error: Declear error"<<std::endl;
                 }
             }
             if (cur_line.front().type == "identifier") {
@@ -346,20 +350,15 @@ bool process_main(std::deque<Token>* token) {
     } else {
         return false; // "(" 不匹配，返回 false
     }
-    /*
 
     if (!token->empty() && token->front().value == "identifier" && token->front().value== "argc") {
         token->pop_front(); // 弹出 "argc" token
-    } else {
-        return false; // "argc" 不匹配，返回 false
+        if (!token->empty() && token->front().value == "identifier" && token->front().value == "argv") {
+            token->pop_front(); // 弹出 "argv" token
+        } else {
+            return false; // "argv" 不匹配，返回 false
+        }
     }
-
-    if (!token->empty() && token->front().value == "identifier" && token->front().value == "argv") {
-        token->pop_front(); // 弹出 "argv" token
-    } else {
-        return false; // "argv" 不匹配，返回 false
-    }
-     */
 
     if (!token->empty() && token->front().value == ")") {
         token->pop_front(); // 弹出 ")" token
