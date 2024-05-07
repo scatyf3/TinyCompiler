@@ -1,32 +1,36 @@
 %{
-#include "../src/tcc.hpp"
-std::deque<Token> token;
+#define YYSTYPE char *
+#include <iostream>
+#include <string>
+#include "../build/y.tab.h"
+int cur_line = 1;
+void yyerror(const char *msg);
+void unrecognized_char(char c);
 %}
 
-%option noyywrap
+
+OPERATOR        [-/+*()=;<>(){}|^&,]
+INTEGER         [0-9]+
+IDENTIFIER      [_a-zA-Z][_a-zA-Z0-9]*
+WHITESPACE      [ \n\t\r\a]+*
+
 
 %%
-","                       { token.push_back(Token(yytext, "comma"));}
-[+*-/%=!<>]           { token.push_back(Token(yytext, "operator")); }
-"|"                { token.push_back(Token(yytext, "operator"));}
-"^"                { token.push_back(Token(yytext, "operator"));}
-"&"                { token.push_back(Token(yytext, "operator"));}
-"<="                { token.push_back(Token(yytext, "operator"));}
-">="                { token.push_back(Token(yytext, "operator"));}
-"=="                {token.push_back(Token(yytext, "operator"));}
-"!="                { token.push_back(Token(yytext, "operator"));}
-"&&"                { token.push_back(Token(yytext, "operator"));}
-"||"                { token.push_back(Token(yytext, "operator"));}
-";"                     { token.push_back(Token(yytext, "semicolon"));}
-"int"                    { token.push_back(Token(yytext, "keyword")); }
-"return"                   { token.push_back(Token(yytext, "keyword")); }
-"main"                   { token.push_back(Token(yytext, "keyword")); }
-"println_int"            { token.push_back(Token(yytext, "std_function")); }
-"("|")"|"{"|"}"                    { token.push_back(Token(yytext, "brackets")); }
-[0-9]+                { token.push_back(Token(yytext, "constant")); }
-[A-Za-z_][0-9A-Za-z_]*                   { token.push_back(Token(yytext, "identifier")); }
-[ \n\t\r\a]+          { /* ignore all spaces */               }
-.                     {/*printf("未识别的字符 %c，ASCII 编码：%d\n", *yytext, *yytext); */ }
+{OPERATOR}          { return T_operator; }
+"<="                { return T_operator;}
+">="                { return T_operator;}
+"=="                { return T_operator;}
+"!="                { return T_operator;}
+"&&"                { return T_operator;}
+"||"                { return T_operator;}
+"int"                    { return T_keyword; }
+"return"                 { return T_keyword; }
+"main"                   { return T_keyword; }
+"println_int"            { return T_std_function; }
+{INTEGER}                { yylval = strdup(yytext); return T_IntConstant; }
+{IDENTIFIER}             { yylval = strdup(yytext); return T_Identifier; }
+{WHITESPACE}             { /* ignore all spaces */               }
+.                        {/*printf("未识别的字符 %c，ASCII 编码：%d\n", *yytext, *yytext); */ }
 <<EOF>>                  { return 0; }
 %%
 
@@ -39,10 +43,20 @@ int main(int argc, char* argv[]) {
     std::string filename = argv[1];  // 获取文件名
     yyin = fopen(filename.c_str(), "r");  // 使用文件名打开文件
     yylex();
-    // for debug
-    //printTokens(token);
-    //std::cout << "=======" << std::endl;
-    std::string output = compile(token);
-    std::cout << output << std::endl;
     return 0;
+}
+
+int yywrap(void) { 
+    return 1;
+}
+
+void unrecognized_char(char c) {
+    char buf[32] = "Unrecognized character: ?";
+    buf[24] = c;
+    yyerror(buf);
+}
+
+void yyerror(const char *msg) {
+    printf("Error at line %d:\n\t%s\n", cur_line, msg);
+    exit(1);
 }

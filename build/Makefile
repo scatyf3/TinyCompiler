@@ -1,22 +1,30 @@
-run: tinyCompiler
-	./tinyCompiler ../test/testcase.minic 
+CC = g++
+OUT = tcc
+OBJ = lex.yy.o y.tab.o
+SCANNER = ../src/tokenrizer.l
+PARSER = ../src/parser.y
 
-test_compile:
-	g++ ../test/test_compile.cpp -o test_compile -std=c++14 -fsanitize=address,undefined
-	./test_compile
-test_tokenrizer.cpp: ../test/test_flex_rule.l
-	flex -o test_tokenrizer.cpp ../test/test_flex_rule.l
-	g++ -o test_tokenrizer test_tokenrizer.cpp -std=c++14 -fsanitize=address,undefined
-	./test_tokenrizer
+build: $(OUT)
 
+run: $(OUT)
+	./$(OUT) < test.c > test.asm
 
-
-lex.yy.cpp: ../src/tokenrizer.l
-	flex -o $@ $^
-
-tinyCompiler:  lex.yy.cpp
-	g++ -o $@ $^ -std=c++14 -g
-
-.PHONY: clean
 clean:
-	rm -f test_tokenrizer lex.yy.cpp tinyCompiler
+	rm -f *.o lex.yy.c y.tab.c y.tab.h y.output $(OUT)
+
+$(OUT): $(OBJ)
+	$(CC) -o $(OUT) $(OBJ) -ll
+
+
+lex.yy.o: lex.yy.c y.tab.h
+	$(CC) -c -o $@ $<
+
+y.tab.o: y.tab.c
+	$(CC) -c -o $@ $<
+
+lex.yy.c: $(SCANNER) y.tab.h
+	flex -o $@ $(SCANNER)
+
+y.tab.c y.tab.h: $(PARSER)
+	bison -vdty -o y.tab.c -d $<
+
