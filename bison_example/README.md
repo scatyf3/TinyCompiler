@@ -1,6 +1,8 @@
 ## bison example
 这里用网上已经被证明正确的bison小demo以排除bug🤔
 
+### 计算器
+
 ```sh
 sh run.sh
 ```
@@ -48,3 +50,12 @@ Learn more:
 1. [c++ - "yyparse/yylex/yyerror was not declared in this scope" - Flex/Bison - Stack Overflow](https://stackoverflow.com/questions/38143828/yyparse-yylex-yyerror-was-not-declared-in-this-scope-flex-bison)
 2. [bison - Yacc errors error: ‘yylval’ undeclared (first use in this function) - Stack Overflow](https://stackoverflow.com/questions/31738786/yacc-errors-error-yylval-undeclared-first-use-in-this-function)
 3. [implicit declaration of function 'yylex' is invalid in C99](https://lists.gnu.org/r/bug-bison/2022-01/msg00002.html)
+
+
+### 其他tcc
+
+```
+make
+make run 
+make clean
+```
