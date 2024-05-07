@@ -11,6 +11,8 @@
 
 ## 实验二：支持更复杂的文法处理和print
 
+详细的说明见`doc/lab_02_write_up.md`
+
 ### 前端
 
 - 将初代编译器的前端转化为flex
@@ -32,3 +34,7 @@
 - `make test_compile` 从test文件夹下的`test_compile.cpp`构建从给定的token编译程序的后端程序
 - `sh run_cases_2.sh` 运行`test/cases_2/`文件夹下的八个测试用例，结果储存在`out/case_2`里
 
+## 实验三
+
+- 用bison改写后端
+- 支持函数定义和调用
