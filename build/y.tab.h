@@ -39,32 +39,47 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     T_IntConstant = 258,
-     T_Identifier = 259,
+     T_Identifier = 258,
+     T_IntConstant = 259,
      T_std_function = 260,
      T_keyword = 261,
-     T_operator = 262
+     T_operator = 262,
+     T_Type = 263,
+     T_return = 264,
+     T_assign = 265,
+     T_semicolon = 266,
+     T_main = 267,
+     T_Le = 268,
+     T_Ge = 269,
+     T_Eq = 270,
+     T_Ne = 271,
+     T_And = 272,
+     T_Or = 273
    };
 #endif
 /* Tokens.  */
-#define T_IntConstant 258
-#define T_Identifier 259
+#define T_Identifier 258
+#define T_IntConstant 259
 #define T_std_function 260
 #define T_keyword 261
 #define T_operator 262
+#define T_Type 263
+#define T_return 264
+#define T_assign 265
+#define T_semicolon 266
+#define T_main 267
+#define T_Le 268
+#define T_Ge 269
+#define T_Eq 270
+#define T_Ne 271
+#define T_And 272
+#define T_Or 273
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 28 "../src/parser.y"
-{
-    char* lexeme;
-}
-/* Line 1529 of yacc.c.  */
-#line 67 "y.tab.h"
-	YYSTYPE;
+typedef int YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

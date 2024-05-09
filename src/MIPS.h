@@ -19,17 +19,23 @@ int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_ta
 #define MIPS_PUSH_CONST(val) \
     do { \
         printf("li $v0,%s\n",val);\
-        printf("addiu $sp, $sp, -4\n"); \
         printf("sw $v0, 0($sp)\n"); \
+        printf("addiu $sp, $sp, -4\n"); \
     } while (0)
 
 
 #define MIPS_PUSH_VARS(offset) \
     do { \
-        printf("li $v0,%d($fp)\n",offset);\
-        printf("addiu $sp, $sp, -4\n"); \
+        printf("lw $v0,%d($fp)\n",offset);\
         printf("sw $v0, 0($sp)\n"); \
+        printf("addiu $sp, $sp, -4\n"); \
     } while (0)
+
+#define MIPS_POP(target_reg)\
+    do{\
+        printf("lw %s, 4($sp)\n", target_reg); \
+        printf("addiu $sp, $sp, 4\n");\
+    }while(0)
 
 
 #define PRINT() \
@@ -46,8 +52,14 @@ int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_ta
         printf(".data\nnewline: .asciiz \"\\n\"\n.text\n.globl main\nmain:\nmove $fp, $sp\naddiu $sp, $sp, -0x100\n"); \
     } while (0)
 
-#define GET_TWO_VAL_FROM_STACK()\
+#define EVAL_PRE()\
     do { \
        printf("lw $t1, 4($sp)\n");\
        printf("lw $t0, 8($sp)\n");\
     } while (0)
+
+#define EVAL_AFTER()\
+do{\
+    printf("sw $t0, 8($sp)\n");\
+    printf("addiu $sp, $sp, 4\n");\
+}while(0);

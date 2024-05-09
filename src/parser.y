@@ -64,7 +64,7 @@ MainArgList: /* empty */
 
 DeclStmt:   T_Type T_Identifier T_semicolon  { 
     sign_table.push_back($2);//todo char* 2 std::string，但是好像发现打印出来是正常的，先不管了
-    printf("sw $zero,%d($fp)\n",(sign_table.size()*-4));
+    printf("sw $zero,%d($fp)\n",(sign_table.size()*-4)); //这里不能按warning操作，否则有问题
     //printSignTable(sign_table);
  }
     ;
@@ -72,6 +72,8 @@ DeclStmt:   T_Type T_Identifier T_semicolon  {
 Stmt:   T_Identifier T_assign E T_semicolon  { 
     //默认将E计算结果放到$v0
     int offset=searchAndCalculateOffset($2,sign_table);
+    //加载栈顶元素，即右边表达式运算结果到$v0
+    MIPS_POP("$v0");
     printf("sw $v0,%d($fp)\n",offset);
 };
 
@@ -85,38 +87,114 @@ ReturnVar:   T_return T_Identifier T_semicolon  {
     printf("lw $v0, %d($fp)\n", offset);    
 };
 
-
 ReturnConst: T_return T_IntConstant T_semicolon { 
-    printf("li $v0, %d\n", $2);
+    printf("li $v0, %s\n", $2);
 };
 
 
-StdFuncStmt:   T_std_function '(' E ')' T_semicolon  { 
-    //TODO：区分常数和变量？ 更正确的打印🤔
-    printf("lw $a0, %s\n",$3);
+StdFuncStmt:   T_std_function ArgList T_semicolon  { 
     PRINT();
 };
 
-E   :   E '+' E            { 
-    GET_TWO_VAL_FROM_STACK();
+ArgList: MainArgList
+       | FuncArgList
+       ;
+
+FuncArgList: '(' E ')' {
+                MIPS_POP("$a0");
+            }
+           | '(' T_IntConstant ')' { printf("li $a0, %s",$1); }
+           | '(' T_Identifier ')' {
+            int offset = searchAndCalculateOffset($2,sign_table);
+            printf("lw $a0, %d($fp)\n", offset); 
+           }
+           ;
+
+
+E: E '+' E {
+    EVAL_PRE();
     printf("add $t0, $t0, $t1\n");
-    printf("sw $t0, 8($sp)\n");
-    printf("addiu $sp, $sp, 4\n");
+    EVAL_AFTER();
 }
-    |   E '-' E            { printf("\tsub "); }
-    |   E  '*' E           { printf("\tmul "); }
-    |   E '/' E           { printf("\tdiv "); }
-    |   E '%' E           { printf("\tmod "); }
-    |   E '>' E           { printf("\tcmpgt "); }
-    |   E '<' E           { printf("\tcmplt "); }
-    |   E T_Ge E          { printf("\tcmpge "); }
-    |   E T_Le E          { printf("\tcmple "); }
-    |   E T_Eq E          { printf("\tcmpeq "); }
-    |   E T_Ne E          { printf("\tcmpne "); }
-    |   E T_Or E          { printf("\tor "); }
-    |   E T_And E         { printf("\tand "); }
-    |   '-' E %prec '!'      { printf("\tneg "); }
-    |   '!' E                { printf("\tnot "); }
+| E '-' E {
+    EVAL_PRE();
+    printf("sub $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '*' E {
+    EVAL_PRE();
+    printf("mul $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '/' E {
+    EVAL_PRE();
+    printf("div $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '%' E {
+    EVAL_PRE();
+    printf("rem $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '>' E {
+    EVAL_PRE();
+    printf("slt $t0, $t1, $t0\n");
+    EVAL_AFTER();
+}
+| E '<' E {
+    EVAL_PRE();
+    printf("slt $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E T_Ge E {
+    EVAL_PRE();
+    printf("slt $t0, $t0, $t1\n");
+    printf("xori $t0, $t0, 1\n");
+    EVAL_AFTER();
+}
+| E T_Le E {
+    EVAL_PRE();
+    printf("slt $t0, $t1, $t0\n");
+    printf("xori $t0, $t0, 1\n");
+    EVAL_AFTER();
+}
+| E T_Eq E {
+    EVAL_PRE();
+    printf("seq $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E T_Ne E {
+    EVAL_PRE();
+    printf("sne $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E T_Or E {
+    EVAL_PRE();
+    printf("or $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E T_And E {
+    EVAL_PRE();
+    printf("and $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '^' E {
+    EVAL_PRE();
+    printf("xor $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '|' E {
+    EVAL_PRE();
+    printf("or $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+| E '&' E {
+    EVAL_PRE();
+    printf("and $t0, $t0, $t1\n");
+    EVAL_AFTER();
+}
+    |   '-' E %prec '!'      { printf("\tneg "); /*暂时不用支持*/ }
+    |   '!' E                { printf("\tnot "); /*暂时不用支持*/ }
     |   T_IntConstant            { 
             //push const not work?
             MIPS_PUSH_CONST($1);
