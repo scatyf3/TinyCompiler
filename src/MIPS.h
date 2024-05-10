@@ -63,3 +63,13 @@ do{\
     printf("sw $t0, 8($sp)\n");\
     printf("addiu $sp, $sp, 4\n");\
 }while(0);
+
+#define FUNC_RETURN() \
+    do { \
+        printf("addiu $sp, $sp, 4\n"); \
+        printf("move $sp, $fp\n"); \
+        printf("lw $fp, 4($sp)\n"); \
+        printf("lw $ra, 0($sp)\n"); \
+        printf("addiu $sp, $sp, 4\n"); \
+        printf("jr $ra\n"); \
+    } while(0)

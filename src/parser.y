@@ -7,7 +7,6 @@
 void yyerror(const char*);
 int yylex(void);
 #define YYSTYPE char *
-std::vector<std::string> sign_table; //符号表
 std::string asm_src; //生成的汇编码
 int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_table);
 extern "C" FILE* yyin;
@@ -42,18 +41,40 @@ void printSignTable(const std::vector<std::string>& sign_table) {
 
 %%
 
-S   :   EntryPoint '{' StmtList '}' { };
+S   :   FuncDefList EntryPoint '{' StmtList '}' 
 
-EntryPoint : T_Type T_main '(' MainArgList ')' { MAIN(); };
+FuncDefList : /* 空 */
+            | FuncDefList FuncDef
+            ;
 
-StmtList:  Stmt
-         | StmtList Stmt
-         | DeclStmt
+FuncDef : T_Type T_Identifier FuncArgList '{' StmtList '}' {
+    printf(".globl %s\n",$2);
+    printf("%s:\n",$2);
+    printf("addiu $sp, $sp, -4\n");
+    printf("sw $ra, 0($sp)\n");
+    printf("sw $fp, 4($sp)\n");
+    printf("move $fp, $sp\n");
+    printf("addiu $sp, $sp, -4\n");
+    //todo:调用的后续？->StmtList结束
+    //如果在main，直接被return取消掉了
+
+};
+
+EntryPoint : T_Type T_main '(' MainArgList ')' { 
+    MAIN(); 
+    std::vector<std::string> sign_table ;
+    };
+
+StmtList:  AssignStmt {FUNC_RETURN();}
+         | StmtList AssignStmt
+         | DeclStmt {FUNC_RETURN();}
          | StmtList DeclStmt
-         | ReturnStmt
+         | ReturnStmt {FUNC_RETURN();}
          | StmtList ReturnStmt
-         | StdFuncStmt
+         | StdFuncStmt {FUNC_RETURN();}
          | StmtList StdFuncStmt
+         | FuncCallStmt {FUNC_RETURN();}
+         | StmtList FuncCallStmt
          ;
 
 
@@ -69,7 +90,7 @@ DeclStmt:   T_Type T_Identifier T_semicolon  {
  }
     ;
 
-Stmt:   T_Identifier T_assign E T_semicolon  { 
+AssignStmt:   T_Identifier T_assign E T_semicolon  { 
     //默认将E计算结果放到$v0
     int offset=searchAndCalculateOffset($2,sign_table);
     //加载栈顶元素，即右边表达式运算结果到$v0
@@ -92,23 +113,38 @@ ReturnConst: T_return T_IntConstant T_semicolon {
 };
 
 
-StdFuncStmt:   T_std_function ArgList T_semicolon  { 
+StdFuncStmt:   T_std_function '(' StdFuncArg ')' T_semicolon  { 
     PRINT();
 };
 
-ArgList: MainArgList
-       | FuncArgList
-       ;
+FuncCallStmt : T_Identifier FuncArgList T_semicolon{
+    printf("jal %s",$1);
+    std::vector<std::string> sign_table; //不确定
+}
 
-FuncArgList: '(' E ')' {
-                MIPS_POP("$a0");
-            }
-           | '(' T_IntConstant ')' { printf("li $a0, %s",$1); }
-           | '(' T_Identifier ')' {
+
+FuncArgList:  '(' FuncArgs ')' {/*标准函数，都要进栈3*/};
+
+StdFuncArg : E { MIPS_POP("$a0");}
+           | T_IntConstant { printf("li $a0, %s",$1); }
+           | T_Identifier {
+                int offset = searchAndCalculateOffset($1,sign_table);
+                printf("lw $a0, %d($fp)\n", offset); 
+           };
+
+FuncArgs : E {}
+         | T_IntConstant { MIPS_PUSH_CONST($1);}   
+         | T_Identifier  { 
+            int offset = searchAndCalculateOffset($1,sign_table);
+            MIPS_PUSH_VARS(offset);
+         }
+         | E ',' FuncArgs {}
+         | T_IntConstant ',' FuncArgs { MIPS_PUSH_CONST($1);}   
+         | T_Identifier',' FuncArgs { 
             int offset = searchAndCalculateOffset($2,sign_table);
-            printf("lw $a0, %d($fp)\n", offset); 
-           }
-           ;
+            MIPS_PUSH_VARS(offset);
+         }
+         ;
 
 
 E: E '+' E {
