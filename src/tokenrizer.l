@@ -29,8 +29,8 @@ WHITESPACE      [ \n\t\r\a]+*
 "!="                { return T_Ne;}
 "&&"                { return T_And;}
 "||"                { return T_Or;}
-"int"                     { return T_Type; }
-"void"                    { return T_Type; }
+"int"                     { return T_int; }
+"void"                    { return T_void; }
 "return"                 { return T_return; }
 "main"                   { return T_main; }
 "println_int"            { return T_std_function; }
