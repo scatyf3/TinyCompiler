@@ -41,22 +41,22 @@ int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolTyp
     int offset = 0;
     int funcArgCounter = 0;
     int localVarCounter = 0;
-
     // Debug
-    //printf("# the symbol we find is: %s\n", symbol);
-    
+    printf("# the symbol we find is: %s\n", symbol);
     for (int i = 0; i < sign_table.size(); i++) {
         const char* identifier = sign_table[i].second.c_str(); // Access the second element of the pair (the string value)
-        
+        if (sign_table[i].first == SymbolType::FUNC_ARG) {
+            funcArgCounter++;
+        } else if (sign_table[i].first == SymbolType::LOCAL_VAR) {
+            localVarCounter++;
+        }
         if (strcmp(identifier, symbol) == 0) {
-            if (sign_table[i].first == SymbolType::FUNC_ARG) {
-                funcArgCounter++;
-            } else if (sign_table[i].first == SymbolType::LOCAL_VAR) {
-                localVarCounter++;
-            }
+            //如果找到，就break
+            break;
         }
     }
-    
+    printf("func arg counter = %d\n",funcArgCounter);
+    printf("local var counter = %d\n",localVarCounter);
     SymbolType symbolType;
     
     if (funcArgCounter > 0) {
@@ -68,7 +68,7 @@ int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolTyp
         offset = localVarCounter * -4; // 
     }
     
-    //printf("# offset is %d for symbol type: %d\n", offset, symbolType);
+    printf("# offset is %d for symbol type: %d\n", offset, symbolType);
     return offset;
 }
 
@@ -118,7 +118,7 @@ int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolTyp
 #define MAIN() \
     do { \
         debug_log<<"FUNC @main:"<<"\n";\
-        intermediate_code += "\nmain:\nmove $fp, $sp\naddiu $sp, $sp, -8\n"; \
+        intermediate_code += "\nmain:\nmove $fp, $sp\naddiu $sp, $sp, -0x100\n"; \
     } while (0)
 
 #define EVAL_PRE() \

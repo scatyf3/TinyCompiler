@@ -87,7 +87,7 @@ FuncName:
 
 Args:
     '(' ')'                         { /*printf("args empty");*/ }
-|   '(' _Args ')'                   { /*printf("args full");*/ }
+|   '(' _Args ')'                   { debug_log<<"ARGLIST:"<<" \n";}
 ;
 
 _Args:
@@ -100,7 +100,7 @@ _Args:
     |   _Args ',' T_int T_Identifier    { 
         sign_table.push_back(std::make_pair(SymbolType::FUNC_ARG,std::string($4)));
         printSignTable(sign_table);
-        debug_log<<" "<<std::string($2)<<" ";
+        debug_log<<" "<<std::string($2)<<" \n";
     }
 ;
 
@@ -168,7 +168,8 @@ DeclAssignList:   T_Identifier T_assign E  {
     MIPS_POP("$v0");
     intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
     intermediate_code += "\n";
-    debug_log<<"assign "<<std::string($3)<<",";
+    debug_log<<"assign "<<std::string($3)<<"=\n";
+    intermediate_code += "# end of DeclAssignList\n\n";
 };
 
 AssignStmt:   T_Identifier T_assign E T_semicolon  { 
