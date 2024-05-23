@@ -15,10 +15,6 @@ extern "C" FILE* yyin;
 void printSignTable(const std::vector<std::pair<SymbolType, std::string>>& sign_table);
 std::vector<std::pair<SymbolType, std::string>> sign_table;
 std::map<std::string, std::vector<std::pair<SymbolType, std::string>>> frames; //全局的frame，可能解析符号表有用，但是也可能改成vector of string
-std::stack<std::vector<std::pair<SymbolType, std::string>>> frame_stack;
-std::vector<std::string> functions;
-
-
 %}
 
 %error-verbose
@@ -69,8 +65,7 @@ FuncName:
         intermediate_code += "sw $ra, 0($sp)\n";
         intermediate_code += "sw $fp, 4($sp)\n";
         intermediate_code += "move $fp, $sp\n";
-        intermediate_code += "addiu $sp, $sp, -4\n";
-        //functions.push_back($1);
+        intermediate_code += "addiu $sp, $sp, -0x100\n"; //这里是多少其实不重要🤔，只要大于local var的数目就好
         std::vector<std::pair<SymbolType, std::string>> sign_table;
         printSignTable(sign_table);
         frames.insert(std::make_pair(std::string($1),sign_table)); 
@@ -81,7 +76,7 @@ FuncName:
         std::vector<std::pair<SymbolType, std::string>> sign_table_main;
         printSignTable(sign_table_main);
         frames.insert(std::make_pair("main",sign_table_main));
-        frame_stack.push(sign_table_main);
+        //frame_stack.push(sign_table_main);
         sign_table = sign_table_main;
     }
 ;
@@ -139,7 +134,8 @@ DeclList:  T_Identifier  {
     intermediate_code += "# this is a DeclStmt\n";
     sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($1)));
     printSignTable(sign_table);
-    intermediate_code += "sw $zero," + std::to_string(sign_table.size() * -4) + "($fp)\n";
+    //通过类型转换避免错误😠
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table.size()) * 4)) + "($fp)\n";
     intermediate_code += "# end of DeclList\n\n";
     debug_log<<"var "<<std::string($1)<<"\n";
 } 
@@ -147,7 +143,7 @@ DeclList:  T_Identifier  {
     intermediate_code += "# this is a DeclStmt\n";
     sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($3)));
     printSignTable(sign_table);
-    intermediate_code += "sw $zero," + std::to_string(sign_table.size() * -4) + "($fp)\n";
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table.size()) * 4)) + "($fp)\n";
     debug_log<<"var "<<std::string($3)<<"\n";
 };
 
@@ -190,13 +186,14 @@ ReturnStmt: ReturnVar
           ;
 
 ReturnVar:   T_return T_Identifier T_semicolon  { 
-    intermediate_code += "# start of return stmt\n";
+    //intermediate_code += "# start of return stmt\n";
     int offset = searchAndCalculateOffset($2, sign_table);
     intermediate_code += "lw $v0, " + std::to_string(offset) + "($fp)\n";
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
     printSignTable(sign_table);
-    intermediate_code += "# end of return stmt\n";
+    FUNC_RETURN();
+    //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
 };
 
@@ -205,7 +202,8 @@ ReturnConst: T_return T_IntConstant T_semicolon {
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
     printSignTable(sign_table);
-    intermediate_code += "# end of return stmt\n";
+    FUNC_RETURN();
+    //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
 };
 
@@ -235,7 +233,7 @@ FuncCallStmt:
 FuncCallExpr:    
         T_Identifier Actuals { 
         debug_log<<"function "<<std::string($1)<<"\n";
-        intermediate_code +="jal"+std::string($1)+"\n";
+        intermediate_code +="jal "+std::string($1)+"\n";
         std::vector<std::pair<SymbolType, std::string>> sign_table_main; //不确定
         //FUNC_RETURN();  这是函数定义里的return，而不是实际的return
         
@@ -400,6 +398,20 @@ int main(int argc, char* argv[]) {
     // 缓存yyparse的结果
     
     yyparse();
+
+    // 打印符号表
+    for (auto it = frames.begin(); it != frames.end(); ++it) {
+        std::cout << ".globl " << it->first << std::endl;
+    }
+    //打印data字段
+    std::cout<<".data\nnewline: .asciiz \"\\n\"\n.text\n";
+    //删除最后五行，即main不使用和其他函数一样的return🤔 -> 所以return最好不要有注释？
+    // 1. 找到最后 5 行的起始位置
+    size_t start_pos = intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n") - 1) - 1) - 1);
+    // 2. 删除最后 5 行
+    intermediate_code.erase(start_pos);
     std::cout<<intermediate_code;
+    //退出程序
+    std::cout<<"\nli $v0, 10\nsyscall\n";
     return 0;
 }

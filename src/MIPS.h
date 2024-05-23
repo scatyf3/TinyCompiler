@@ -118,7 +118,7 @@ int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolTyp
 #define MAIN() \
     do { \
         debug_log<<"FUNC @main:"<<"\n";\
-        intermediate_code += "\nmain:\nmove $fp, $sp\naddiu $sp, $sp, -0x100\n"; \
+        intermediate_code += "\nmain:\nmove $fp, $sp\naddiu $sp, $sp, -8\n"; \
     } while (0)
 
 #define EVAL_PRE() \
@@ -138,7 +138,7 @@ int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolTyp
 
 #define FUNC_RETURN() \
     do { \
-        debug_log<<"fun declare return"<<"\n";\
+        debug_log<<"func declare return"<<"\n";\
         intermediate_code += "move $sp, $fp\n"; \
         intermediate_code += "lw $fp, 4($sp)\n"; \
         intermediate_code += "lw $ra, 0($sp)\n"; \
