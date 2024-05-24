@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cstring>
+#include <set>
 #include "../src/MIPS.h"
 #include "../src/sign_table.hpp"
 void yyerror(const char*);
@@ -10,7 +11,8 @@ int yylex(void);
 std::string asm_src; //生成的汇编码
 int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_table);
 extern "C" FILE* yyin;
-
+std::set<std::string> functions;
+SignTable* sign_table;
 %}
 
 %error-verbose
@@ -62,22 +64,18 @@ FuncName:
         intermediate_code += "sw $fp, 4($sp)\n";
         intermediate_code += "move $fp, $sp\n";
         intermediate_code += "addiu $sp, $sp, -0x100\n"; //这里是多少其实不重要🤔，只要大于local var的数目就好
-        std::vector<std::vector> sign_table;
-        intermediate_code+=printSignTable(sign_table);
-        frames.insert(std::make_pair(std::string($1),sign_table)); 
+        sign_table = new SignTable();
+        intermediate_code+=sign_table->printSignTable();
+        functions.insert(std::string($1));
         debug_log<<"FUNC @"<<std::string($1)<<":";
         }
     | T_main {
         MAIN(); 
-        std::vector<std::pair<SymbolType, std::string>> sign_table_main;
-        intermediate_code+=printSignTable(sign_table_main);
-        frames.insert(std::make_pair("main",sign_table_main));
-        //frame_stack.push(sign_table_main);
-        sign_table = sign_table_main;
+        sign_table = new SignTable();
+        intermediate_code+=sign_table->printSignTable();
+        functions.insert(std::string("main"));
     }
 ;
-
-
 
 
 
@@ -88,14 +86,13 @@ Args:
 
 _Args:
     T_int T_Identifier              {
-        /*建立起参数和*/
-        sign_table.push_back(std::make_pair(SymbolType::FUNC_ARG,std::string($2)));
-        intermediate_code+=printSignTable(sign_table);
+        sign_table->addSymbol(Symbol(SymbolType::FUNC_ARG,std::string($2)));
+        intermediate_code+=sign_table->printSignTable();
         debug_log<<" "<<std::string($2)<<" \n";
     }
     |   _Args ',' T_int T_Identifier    { 
-        sign_table.push_back(std::make_pair(SymbolType::FUNC_ARG,std::string($4)));
-        intermediate_code+=printSignTable(sign_table);
+        sign_table->addSymbol(Symbol(SymbolType::FUNC_ARG,std::string($4)));
+        intermediate_code+=sign_table->printSignTable();
         debug_log<<" "<<std::string($2)<<" \n";
     }
 ;
@@ -128,27 +125,27 @@ DeclStmt:   T_int DeclList T_semicolon  {
 
 DeclList:  T_Identifier  { 
     intermediate_code += "# this is a DeclStmt\n";
-    sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($1)));
-    intermediate_code+=printSignTable(sign_table);
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($1)));
+    intermediate_code+=sign_table->printSignTable();
     //通过类型转换避免错误😠
-    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table.size()) * 4)) + "($fp)\n";
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table->size()) * 4)) + "($fp)\n";
     intermediate_code += "# end of DeclList\n\n";
     debug_log<<"var "<<std::string($1)<<"\n";
 } 
 |   DeclList ',' T_Identifier  { 
     intermediate_code += "# this is a DeclStmt\n";
-    sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($3)));
-    intermediate_code+=printSignTable(sign_table);
-    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table.size()) * 4)) + "($fp)\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($3)));
+    intermediate_code+=sign_table->printSignTable();
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table->size()) * 4)) + "($fp)\n";
     debug_log<<"var "<<std::string($3)<<"\n";
 };
 
 DeclAssignStmt:   T_int DeclAssignList T_semicolon  { };
 
 DeclAssignList:   T_Identifier T_assign E  { 
-    sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($1)));
-    intermediate_code+=printSignTable(sign_table);
-    int offset=searchAndCalculateOffset($1,sign_table);
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($1)));
+    intermediate_code+=sign_table->printSignTable();
+    int offset=sign_table->searchAndCalculateOffset($1);
     //MIPS_POP("$v0");->处理E不是单个变量或者const的情况->可能要统一e的返回值，到底在$v0还是stack顶
     MIPS_POP("$v0");
     intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
@@ -157,10 +154,9 @@ DeclAssignList:   T_Identifier T_assign E  {
     debug_log<<"assign "<<std::string($1)<<"=\n";
 } 
 |   DeclAssignList ',' T_Identifier T_assign E  { 
-    sign_table.push_back(std::make_pair(SymbolType::LOCAL_VAR,std::string($3)));
-    intermediate_code+=printSignTable(sign_table);
-    int offset=searchAndCalculateOffset($3,sign_table);
-    //MIPS_POP("$v0");
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($3)));
+    intermediate_code+=sign_table->printSignTable();
+    int offset=sign_table->searchAndCalculateOffset(std::string($3));
     MIPS_POP("$v0");
     intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
     intermediate_code += "\n";
@@ -170,7 +166,7 @@ DeclAssignList:   T_Identifier T_assign E  {
 
 AssignStmt:   T_Identifier T_assign E T_semicolon  { 
     intermediate_code += "# start of assign stmt\n";
-    int offset = searchAndCalculateOffset($2, sign_table);
+    int offset=sign_table->searchAndCalculateOffset(std::string($2));
     MIPS_POP("$v0");
     intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
     intermediate_code += "\n";
@@ -184,11 +180,11 @@ ReturnStmt: ReturnVar
 
 ReturnVar:   T_return T_Identifier T_semicolon  { 
     //intermediate_code += "# start of return stmt\n";
-    int offset = searchAndCalculateOffset($2, sign_table);
+    int offset=sign_table->searchAndCalculateOffset(std::string($2));
     intermediate_code += "lw $v0, " + std::to_string(offset) + "($fp)\n";
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
-    intermediate_code+=printSignTable(sign_table);
+    intermediate_code+=sign_table->printSignTable();
     FUNC_RETURN();
     //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
@@ -198,7 +194,7 @@ ReturnConst: T_return T_IntConstant T_semicolon {
     intermediate_code += "li $v0, " + std::string($2) + "\n";
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
-    intermediate_code+=printSignTable(sign_table);
+    intermediate_code+=sign_table->printSignTable();
     FUNC_RETURN();
     //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
@@ -222,7 +218,7 @@ FuncCallStmt:
         //sign_table = frames[identifier];
         //frame_stack.push(sign_table);
         //std::cout<<"# "<<identifier<<std::endl;
-        intermediate_code+=printSignTable(sign_table);
+        intermediate_code+=sign_table->printSignTable();
         debug_log<<"call";
     }
 ;
@@ -231,14 +227,7 @@ FuncCallExpr:
         T_Identifier Actuals { 
         debug_log<<"function "<<std::string($1)<<"\n";
         intermediate_code +="jal "+std::string($1)+"\n";
-        std::vector<std::pair<SymbolType, std::string>> sign_table_main; //不确定
-        //FUNC_RETURN();  这是函数定义里的return，而不是实际的return
-        
-        //std::string identifier = std::string("sign_table_") + $1;
-        //sign_table = frames[identifier];
-        //frame_stack.push(sign_table);
-        //std::cout<<"# "<<identifier<<std::endl;
-        intermediate_code+=printSignTable(sign_table);
+        intermediate_code+=sign_table->printSignTable();
         FUNC_CALL_RETURN();
         
     }
@@ -375,7 +364,7 @@ E: E '+' E {
     MIPS_PUSH_CONST($1);
 }
 | T_Identifier             { 
-    int offset = searchAndCalculateOffset($1, sign_table); 
+    int offset = sign_table->searchAndCalculateOffset(std::string($1)); 
     MIPS_PUSH_VARS(offset);
 }
 | FuncCallExpr
@@ -397,8 +386,8 @@ int main(int argc, char* argv[]) {
     yyparse();
 
     // 打印符号表
-    for (auto it = frames.begin(); it != frames.end(); ++it) {
-        std::cout << ".globl " << it->first << std::endl;
+    for (const auto& function_name : functions) {
+        std::cout << ".globl " << function_name << std::endl;
     }
     //打印data字段
     std::cout<<".data\nnewline: .asciiz \"\\n\"\n.text\n";
