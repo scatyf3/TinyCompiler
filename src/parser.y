@@ -52,8 +52,8 @@ Program:
 
 
 FuncDef:
-    T_int FuncName Args '{' Stmts '}' { }
-|   T_void FuncName Args '{' Stmts '}' { }
+    T_int FuncName Args '{' Stmts '}' { FUNC_RETURN();}
+|   T_void FuncName Args '{' Stmts '}' { FUNC_RETURN(); }
 ;
 
 FuncName:
@@ -184,8 +184,8 @@ ReturnVar:   T_return T_Identifier T_semicolon  {
     intermediate_code += "lw $v0, " + std::to_string(offset) + "($fp)\n";
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
-    intermediate_code+=sign_table->printSignTable();
-    FUNC_RETURN();
+    //intermediate_code+=sign_table->printSignTable();
+    //FUNC_RETURN();
     //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
 };
@@ -194,8 +194,8 @@ ReturnConst: T_return T_IntConstant T_semicolon {
     intermediate_code += "li $v0, " + std::string($2) + "\n";
     //sign_table = frame_stack.top(); 
     //frame_stack.pop();
-    intermediate_code+=sign_table->printSignTable();
-    FUNC_RETURN();
+    //intermediate_code+=sign_table->printSignTable();
+    //FUNC_RETURN();
     //intermediate_code += "# end of return stmt\n";
     debug_log<<"return "<<std::string($2)<<"\n";
 };
