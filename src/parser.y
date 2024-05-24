@@ -67,7 +67,7 @@ FuncName:
         sign_table = new SignTable();
         intermediate_code+=sign_table->printSignTable();
         functions.insert(std::string($1));
-        debug_log<<"FUNC @"<<std::string($1)<<":";
+        debug_log<<"FUNC @"<<std::string($1)<<":\n";
         }
     | T_main {
         MAIN(); 
@@ -93,7 +93,7 @@ _Args:
     |   _Args ',' T_int T_Identifier    { 
         sign_table->addSymbol(Symbol(SymbolType::FUNC_ARG,std::string($4)));
         intermediate_code+=sign_table->printSignTable();
-        debug_log<<" "<<std::string($2)<<" \n";
+        debug_log<<" "<<std::string($4)<<" \n";
     }
 ;
 
@@ -237,20 +237,22 @@ FuncCallExpr:
 Actuals:    '(' ')'   {  }
        |   '(' _Actuals ')'   { }
        ;
+
 _Actuals:
-    E                  { 
+    E   {
         intermediate_code += "### Passing the arguments " + std::string($1) + "\n\n";
         MIPS_POP("$v0");
-        intermediate_code += "sw $v0, 0($sp)\n"; 
-        intermediate_code += "addiu $sp, $sp, -4\n"; 
-        debug_log<<"pushing func args \n";
-     }
-    |   _Actuals ',' E     { 
-        intermediate_code += "### Passing the arguments " + std::string($3) + "\n"; 
+        intermediate_code += "sw $v0, 0($sp)\n";
+        intermediate_code += "addiu $sp, $sp, -4\n";
+        debug_log<<std::string($1)<<"\n";
+    }
+    |   E ',' _Actuals     {
+        intermediate_code += "### Passing the arguments " + std::string($1) + "\n";
         MIPS_POP("$v0");
-        intermediate_code += "sw $v0, 0($sp)\n"; 
-        intermediate_code += "addiu $sp, $sp, -4\n"; 
+        intermediate_code += "sw $v0, 0($sp)\n";
+        intermediate_code += "addiu $sp, $sp, -4\n";
         intermediate_code += "### End of passing the arguments \n";
+        debug_log<<std::string($1)<<"\n";
     }
 ;
 
