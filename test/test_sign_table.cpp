@@ -1,53 +1,45 @@
-#include "../src/MIPS.h"
 #include <cassert>
+#include "../src/sign_table.hpp"
 #include <iostream>
 
 void testSearchAndCalculateOffset() {
-    // 测试用例1
-    std::vector<std::pair<SymbolType, std::string>> sign_table1 = {
-        {SymbolType::FUNC_ARG, "arg1"},
-        {SymbolType::FUNC_ARG, "arg2"},
-        {SymbolType::LOCAL_VAR, "var1"},
-        {SymbolType::LOCAL_VAR, "var2"},
-        {SymbolType::LOCAL_VAR, "var3"}
-    };
-    printSignTable(sign_table1);
-    
-    assert(searchAndCalculateOffset("arg1", sign_table1) == 8);
-    assert(searchAndCalculateOffset("arg2", sign_table1) == 4);
-    assert(searchAndCalculateOffset("var1", sign_table1) == -4);
-    assert(searchAndCalculateOffset("var2", sign_table1) == -8);
-    assert(searchAndCalculateOffset("var3", sign_table1) == -12);
-    
-    // 测试用例2
-    std::vector<std::pair<SymbolType, std::string>> sign_table2 = {
-        {SymbolType::FUNC_ARG, "arg1"},
-        {SymbolType::LOCAL_VAR, "var1"},
-        {SymbolType::LOCAL_VAR, "var2"}
-    };
-    
-    assert(searchAndCalculateOffset("arg1", sign_table2) == 8);
-    assert(searchAndCalculateOffset("var1", sign_table2) == -4);
-    assert(searchAndCalculateOffset("var2", sign_table2) == -8);
-    
-    // 测试用例3
-    std::vector<std::pair<SymbolType, std::string>> sign_table3 = {
-        {SymbolType::LOCAL_VAR, "var1"},
-        {SymbolType::LOCAL_VAR, "var2"},
-        {SymbolType::LOCAL_VAR, "var3"}
-    };
-    
-    assert(searchAndCalculateOffset("var1", sign_table3) == -4);
-    assert(searchAndCalculateOffset("var2", sign_table3) == -8);
-    assert(searchAndCalculateOffset("var3", sign_table3) == -12);
-    
-    // 添加更多测试用例...
-    
-    std::cout << "All test cases passed!" << std::endl;
-}
+    SignTable sign_table;
+    sign_table.addSymbol({SymbolType::FUNC_ARG, "arg1"});
+    sign_table.addSymbol({SymbolType::FUNC_ARG, "arg2"});
+    sign_table.addSymbol({SymbolType::LOCAL_VAR, "var1"});
+    sign_table.addSymbol({SymbolType::LOCAL_VAR, "var2"});
 
+    int arg1_offset = sign_table.searchAndCalculateOffset("arg1");
+    std::cout<<sign_table.printSignTable()<<std::endl;
+    std::cout<<arg1_offset<<std::endl;
+    assert(arg1_offset == 8);
+
+    int arg2_offset = sign_table.searchAndCalculateOffset("arg2");
+    
+    assert(arg2_offset == 12);
+
+    int var1_offset = sign_table.searchAndCalculateOffset("var1");
+    assert(var1_offset == -4);
+
+    int var2_offset = sign_table.searchAndCalculateOffset("var2");
+    assert(var2_offset == -8);
+
+    int invalid_offset = sign_table.searchAndCalculateOffset("invalid");
+    assert(invalid_offset == -1);
+}
+void testIsInSignTable() {
+    SignTable sign_table;
+    sign_table.addSymbol({SymbolType::FUNC_ARG, "arg1"});
+    sign_table.addSymbol({SymbolType::LOCAL_VAR, "var1"});
+
+    assert(sign_table.isInSignTable("arg1"));
+    assert(sign_table.isInSignTable("var1"));
+    assert(!sign_table.isInSignTable("invalid"));
+}
 
 int main() {
     testSearchAndCalculateOffset();
+    testIsInSignTable();
+    std::cout << "All tests passed!" << std::endl;
     return 0;
 }

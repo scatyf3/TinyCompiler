@@ -1,76 +1,7 @@
 #include <fstream>
 std::ofstream debug_log("debug.log"); // 创建文件输出流
 std::string intermediate_code = "";//“中间码”，但是目前用的是一对一翻译，只有符号表和局部变量需要再处理一趟
-enum SymbolType {
-  FUNC_ARG,
-  LOCAL_VAR
-};
-void printSignTable(const std::vector<std::pair<SymbolType, std::string>>& sign_table) {
-    intermediate_code += "###\n";
-    intermediate_code += "# Symbol Table Elements:\n";
-    
-    if (sign_table.empty()) {
-        intermediate_code += "# 无符号\n";
-    } else {
-        for (const auto& entry : sign_table) {
-            const std::string& symbol = entry.second;
-            SymbolType symbolType = entry.first;
-            std::string symbolTypeName;
 
-            // Convert symbol type to string
-            switch (symbolType) {
-                case SymbolType::FUNC_ARG:
-                    symbolTypeName = "FUNC_ARG";
-                    break;
-                case SymbolType::LOCAL_VAR:
-                    symbolTypeName = "LOCAL_VAR";
-                    break;
-                // Add cases for other symbol types if needed
-                default:
-                    symbolTypeName = "Unknown";
-            }
-
-            intermediate_code += "# " + symbol + " (Type: " + symbolTypeName + ")\n";
-        }
-    }
-    
-    intermediate_code += "###\n";
-}
-
-int searchAndCalculateOffset(const char* symbol, std::vector<std::pair<SymbolType, std::string>> sign_table) {
-    int offset = 0;
-    int funcArgCounter = 0;
-    int localVarCounter = 0;
-    // Debug
-    printf("# the symbol we find is: %s\n", symbol);
-    for (int i = 0; i < sign_table.size(); i++) {
-        const char* identifier = sign_table[i].second.c_str(); // Access the second element of the pair (the string value)
-        if (sign_table[i].first == SymbolType::FUNC_ARG) {
-            funcArgCounter++;
-        } else if (sign_table[i].first == SymbolType::LOCAL_VAR) {
-            localVarCounter++;
-        }
-        if (strcmp(identifier, symbol) == 0) {
-            //如果找到，就break
-            break;
-        }
-    }
-    printf("func arg counter = %d\n",funcArgCounter);
-    printf("local var counter = %d\n",localVarCounter);
-    SymbolType symbolType;
-    
-    if (funcArgCounter > 0) {
-        symbolType = SymbolType::FUNC_ARG;
-        offset = (funcArgCounter+1) * 4; // 4($fp) 储存的是原有的栈帧
-
-    } else if (localVarCounter > 0) {
-        symbolType = SymbolType::LOCAL_VAR;
-        offset = localVarCounter * -4; // 
-    }
-    
-    printf("# offset is %d for symbol type: %d\n", offset, symbolType);
-    return offset;
-}
 
 #define MIPS_PUSH_CONST(val) \
     do { \
