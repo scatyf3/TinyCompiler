@@ -16,7 +16,6 @@ struct Symbol {
 
 class SignTable{
     public:
-        SignTable() : symbols() {}  
         void addSymbol(const Symbol& symbol);
         std::string printSignTable();
         int searchAndCalculateOffset(const std::string& name);
@@ -24,6 +23,8 @@ class SignTable{
         size_t size();
     private:
         std::vector<Symbol> symbols;
+        int _nums_func_arg;
+        int _nums_local_var;
 };
 
 

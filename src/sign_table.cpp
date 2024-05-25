@@ -2,6 +2,12 @@
 
 void SignTable::addSymbol(const Symbol& symbol) {
     symbols.emplace_back(symbol);
+    if(symbol.type==SymbolType::FUNC_ARG){
+        _nums_func_arg++;
+    }
+    else{
+        _nums_local_var++;
+    }
 }
 // display SignTable in intermeiate code
 std::string SignTable::printSignTable() {
@@ -68,7 +74,7 @@ int SignTable::searchAndCalculateOffset(const std::string& name) {
     if (funcArgFound) {
         symbolType = SymbolType::FUNC_ARG;
         funcArgOffset =
-            (funcArgCounter + 1) * 4;  // 4($fp) for the saved frame pointer
+            (_nums_func_arg - funcArgCounter + 2) * 4;
     } else if (localVarFound) {
         symbolType = SymbolType::LOCAL_VAR;
         localVarOffset =
