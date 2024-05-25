@@ -9,7 +9,7 @@ int cur_line = 1;
 %}
 
 
-OPERATOR        [-/+*<>|^&,]
+OPERATOR        [-/+*<>|^&,%]
 INTEGER         [0-9]+
 IDENTIFIER      [_a-zA-Z][_a-zA-Z0-9]*
 WHITESPACE      [ \n\t\r\a]+*
