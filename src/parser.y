@@ -104,9 +104,8 @@ Stmts:
 ;
 
 
-Stmt:      AssignStmt 
-         | DeclStmt
-         | DeclAssignStmt
+Stmt:      DeclStmt
+         | AssignStmt
          | ReturnStmt 
          | StdFuncStmt 
          | FuncCallStmt
@@ -117,7 +116,6 @@ DeclStmt:   T_int DeclList T_semicolon  {
     intermediate_code += "# this is a DeclStmt\n";
     //sign_table.push_back($2);//todo char* 2 std::string，但是好像发现打印出来是正常的，先不管了
     //printf("sw $zero,%d($fp)\n",(sign_table.size()*-4)); //这里不能按warning操作，否则有问题
-    //printSignTable(sign_table);
     //printSignTable(sign_table);
     //交给DeclList处理
     intermediate_code += "\n";
@@ -132,37 +130,35 @@ DeclList:  T_Identifier  {
     intermediate_code += "# end of DeclList\n\n";
     debug_log<<"var "<<std::string($1)<<"\n";
 } 
+|   T_Identifier T_assign E  { 
+    intermediate_code += "# this is a DeclStmt\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($1)));
+    intermediate_code+=sign_table->printSignTable();
+    int offset=sign_table->searchAndCalculateOffset(std::string($1));
+    MIPS_POP("$v0");
+    intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
+    intermediate_code += "# end of DeclList\n\n";
+    debug_log<<"assign "<<std::string($1)<<"=\n";
+}
 |   DeclList ',' T_Identifier  { 
     intermediate_code += "# this is a DeclStmt\n";
     sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($3)));
     intermediate_code+=sign_table->printSignTable();
     intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table->size()) * 4)) + "($fp)\n";
     debug_log<<"var "<<std::string($3)<<"\n";
-};
-
-DeclAssignStmt:   T_int DeclAssignList T_semicolon  { };
-
-DeclAssignList:   T_Identifier T_assign E  { 
-    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($1)));
-    intermediate_code+=sign_table->printSignTable();
-    int offset=sign_table->searchAndCalculateOffset($1);
-    //MIPS_POP("$v0");->处理E不是单个变量或者const的情况->可能要统一e的返回值，到底在$v0还是stack顶
-    MIPS_POP("$v0");
-    intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
-    intermediate_code += "\n";
-    intermediate_code += "# end of DeclAssignList\n\n";
-    debug_log<<"assign "<<std::string($1)<<"=\n";
-} 
-|   DeclAssignList ',' T_Identifier T_assign E  { 
+    intermediate_code += "# end of DeclList\n\n";
+}
+|   DeclList ',' T_Identifier T_assign E  { 
+    intermediate_code += "# this is a DeclStmt\n";
     sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string($3)));
     intermediate_code+=sign_table->printSignTable();
     int offset=sign_table->searchAndCalculateOffset(std::string($3));
     MIPS_POP("$v0");
     intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
-    intermediate_code += "\n";
     debug_log<<"assign "<<std::string($3)<<"=\n";
-    intermediate_code += "# end of DeclAssignList\n\n";
+    intermediate_code += "# end of DeclList\n\n";
 };
+
 
 AssignStmt:   T_Identifier T_assign E T_semicolon  { 
     intermediate_code += "# start of assign stmt\n";
@@ -174,31 +170,8 @@ AssignStmt:   T_Identifier T_assign E T_semicolon  {
     debug_log<<"assign "<<std::string($1)<<"=\n";
 };
 
-ReturnStmt: ReturnVar
-          | ReturnConst 
+ReturnStmt: T_return E T_semicolon {   }
           ;
-
-ReturnVar:   T_return T_Identifier T_semicolon  { 
-    //intermediate_code += "# start of return stmt\n";
-    int offset=sign_table->searchAndCalculateOffset(std::string($2));
-    intermediate_code += "lw $v0, " + std::to_string(offset) + "($fp)\n";
-    //sign_table = frame_stack.top(); 
-    //frame_stack.pop();
-    //intermediate_code+=sign_table->printSignTable();
-    //FUNC_RETURN();
-    //intermediate_code += "# end of return stmt\n";
-    debug_log<<"return "<<std::string($2)<<"\n";
-};
-
-ReturnConst: T_return T_IntConstant T_semicolon { 
-    intermediate_code += "li $v0, " + std::string($2) + "\n";
-    //sign_table = frame_stack.top(); 
-    //frame_stack.pop();
-    //intermediate_code+=sign_table->printSignTable();
-    //FUNC_RETURN();
-    //intermediate_code += "# end of return stmt\n";
-    debug_log<<"return "<<std::string($2)<<"\n";
-};
 
 StdFuncStmt:  T_std_function Actuals T_semicolon  { 
     /*从栈中获取参数*/
