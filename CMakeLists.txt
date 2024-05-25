@@ -1,1 +1,28 @@
- 
+cmake_minimum_required(VERSION 3.16)
+project(lab03)
+set(CMAKE_CXX_STANDARD 14)
+include(FindFLEX)
+include(FindBISON)
+if(FLEX_FOUND)
+ message("Info: flex found!")
+else()
+ message("Error: flex not found!")
+endif()
+if(BISON_FOUND)
+ message("Info: bison found!")
+else()
+ message("Error: bison not found!")
+endif()
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_BINARY_DIR})
+FLEX_TARGET(MyLexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+BISON_TARGET(MyParser grammar.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
+ADD_FLEX_BISON_DEPENDENCY(MyLexer MyParser)
+# add_compile_options(-fsanitize=address)
+# add_link_options(-fsanitize=address)
+add_executable(Compilerlab3
+ sign_table.cpp
+ ${FLEX_MyLexer_OUTPUTS}
+ ${BISON_MyParser_OUTPUTS}
+)
+target_compile_features(Compilerlab3 PRIVATE cxx_std_14)

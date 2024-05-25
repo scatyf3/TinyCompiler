@@ -117,74 +117,72 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named tinyCompiler
+# Target rules for targets named Compilerlab3
 
 # Build rule for target.
-tinyCompiler: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tinyCompiler
-.PHONY : tinyCompiler
+Compilerlab3: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Compilerlab3
+.PHONY : Compilerlab3
 
 # fast build rule for target.
-tinyCompiler/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/build
-.PHONY : tinyCompiler/fast
+Compilerlab3/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/build
+.PHONY : Compilerlab3/fast
 
-#=============================================================================
-# Target rules for targets named run
-
-# Build rule for target.
-run: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run
-.PHONY : run
-
-# fast build rule for target.
-run/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
-.PHONY : run/fast
-
-#=============================================================================
-# Target rules for targets named tinycompiler_clean
-
-# Build rule for target.
-tinycompiler_clean: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tinycompiler_clean
-.PHONY : tinycompiler_clean
-
-# fast build rule for target.
-tinycompiler_clean/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinycompiler_clean.dir/build.make CMakeFiles/tinycompiler_clean.dir/build
-.PHONY : tinycompiler_clean/fast
-
-lex.yy.o: lex.yy.cpp.o
-.PHONY : lex.yy.o
+lexer.o: lexer.cpp.o
+.PHONY : lexer.o
 
 # target to build an object file
-lex.yy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/lex.yy.cpp.o
-.PHONY : lex.yy.cpp.o
+lexer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/lexer.cpp.o
+.PHONY : lexer.cpp.o
 
-lex.yy.i: lex.yy.cpp.i
-.PHONY : lex.yy.i
+lexer.i: lexer.cpp.i
+.PHONY : lexer.i
 
 # target to preprocess a source file
-lex.yy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/lex.yy.cpp.i
-.PHONY : lex.yy.cpp.i
+lexer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/lexer.cpp.i
+.PHONY : lexer.cpp.i
 
-lex.yy.s: lex.yy.cpp.s
-.PHONY : lex.yy.s
+lexer.s: lexer.cpp.s
+.PHONY : lexer.s
 
 # target to generate assembly for a file
-lex.yy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/lex.yy.cpp.s
-.PHONY : lex.yy.cpp.s
+lexer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/lexer.cpp.s
+.PHONY : lexer.cpp.s
+
+parser.o: parser.cpp.o
+.PHONY : parser.o
+
+# target to build an object file
+parser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/parser.cpp.o
+.PHONY : parser.cpp.o
+
+parser.i: parser.cpp.i
+.PHONY : parser.i
+
+# target to preprocess a source file
+parser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/parser.cpp.i
+.PHONY : parser.cpp.i
+
+parser.s: parser.cpp.s
+.PHONY : parser.s
+
+# target to generate assembly for a file
+parser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/parser.cpp.s
+.PHONY : parser.cpp.s
 
 sign_table.o: sign_table.cpp.o
 .PHONY : sign_table.o
 
 # target to build an object file
 sign_table.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/sign_table.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/sign_table.cpp.o
 .PHONY : sign_table.cpp.o
 
 sign_table.i: sign_table.cpp.i
@@ -192,7 +190,7 @@ sign_table.i: sign_table.cpp.i
 
 # target to preprocess a source file
 sign_table.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/sign_table.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/sign_table.cpp.i
 .PHONY : sign_table.cpp.i
 
 sign_table.s: sign_table.cpp.s
@@ -200,32 +198,8 @@ sign_table.s: sign_table.cpp.s
 
 # target to generate assembly for a file
 sign_table.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/sign_table.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/sign_table.cpp.s
 .PHONY : sign_table.cpp.s
-
-y.tab.o: y.tab.cpp.o
-.PHONY : y.tab.o
-
-# target to build an object file
-y.tab.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/y.tab.cpp.o
-.PHONY : y.tab.cpp.o
-
-y.tab.i: y.tab.cpp.i
-.PHONY : y.tab.i
-
-# target to preprocess a source file
-y.tab.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/y.tab.cpp.i
-.PHONY : y.tab.cpp.i
-
-y.tab.s: y.tab.cpp.s
-.PHONY : y.tab.s
-
-# target to generate assembly for a file
-y.tab.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/y.tab.cpp.s
-.PHONY : y.tab.cpp.s
 
 # Help Target
 help:
@@ -235,18 +209,16 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... run"
-	@echo "... tinycompiler_clean"
-	@echo "... tinyCompiler"
-	@echo "... lex.yy.o"
-	@echo "... lex.yy.i"
-	@echo "... lex.yy.s"
+	@echo "... Compilerlab3"
+	@echo "... lexer.o"
+	@echo "... lexer.i"
+	@echo "... lexer.s"
+	@echo "... parser.o"
+	@echo "... parser.i"
+	@echo "... parser.s"
 	@echo "... sign_table.o"
 	@echo "... sign_table.i"
 	@echo "... sign_table.s"
-	@echo "... y.tab.o"
-	@echo "... y.tab.i"
-	@echo "... y.tab.s"
 .PHONY : help
 
 

@@ -1,6 +1,4 @@
 # Hashes of file build rules.
-e4b286ed4c11062afd75024e7077fbcc CMakeFiles/run
-02f05d2e96d714f41dad929a170b9ea8 CMakeFiles/tinycompiler_clean
 f1396b0d4c3fe0684fc1a2dc5c7c1a0b lex.yy.cpp
-1d84fab65ecdba24fd69b7b4a33f7dd7 out/test.asm
-44f3d6b9d02f0cf75bd6c396bed88ee6 y.tab.cpp
+1f7229e763aa325af3cd2043e55f92cd lexer.cpp
+92f983746b37c4653cc304db1a2861a2 parser.cpp

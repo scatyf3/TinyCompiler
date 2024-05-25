@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/Users/juanitahowe/Documents/GitHub/complier/build",
+  "command": "/usr/bin/clang++ -I/Users/juanitahowe/Documents/GitHub/complier -I/Users/juanitahowe/Documents/GitHub/complier/build -g -std=gnu++14 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -o CMakeFiles/Compilerlab3.dir/sign_table.cpp.o -c /Users/juanitahowe/Documents/GitHub/complier/sign_table.cpp",
+  "file": "/Users/juanitahowe/Documents/GitHub/complier/sign_table.cpp",
+  "output": "CMakeFiles/Compilerlab3.dir/sign_table.cpp.o"
+},
+{
+  "directory": "/Users/juanitahowe/Documents/GitHub/complier/build",
+  "command": "/usr/bin/clang++ -I/Users/juanitahowe/Documents/GitHub/complier -I/Users/juanitahowe/Documents/GitHub/complier/build -g -std=gnu++14 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -o CMakeFiles/Compilerlab3.dir/lexer.cpp.o -c /Users/juanitahowe/Documents/GitHub/complier/build/lexer.cpp",
+  "file": "/Users/juanitahowe/Documents/GitHub/complier/build/lexer.cpp",
+  "output": "CMakeFiles/Compilerlab3.dir/lexer.cpp.o"
+},
+{
+  "directory": "/Users/juanitahowe/Documents/GitHub/complier/build",
+  "command": "/usr/bin/clang++ -I/Users/juanitahowe/Documents/GitHub/complier -I/Users/juanitahowe/Documents/GitHub/complier/build -g -std=gnu++14 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -o CMakeFiles/Compilerlab3.dir/parser.cpp.o -c /Users/juanitahowe/Documents/GitHub/complier/build/parser.cpp",
+  "file": "/Users/juanitahowe/Documents/GitHub/complier/build/parser.cpp",
+  "output": "CMakeFiles/Compilerlab3.dir/parser.cpp.o"
+}
+]

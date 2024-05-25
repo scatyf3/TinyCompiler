@@ -1,5 +1,3 @@
-/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/tinyCompiler.dir
-/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/run.dir
-/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/tinycompiler_clean.dir
+/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/Compilerlab3.dir
 /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/edit_cache.dir
 /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles/rebuild_cache.dir

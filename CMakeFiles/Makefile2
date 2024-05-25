@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = /Users/juanitahowe/Documents/GitHub/complier
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/tinyCompiler.dir/all
+all: CMakeFiles/Compilerlab3.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,88 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/tinyCompiler.dir/clean
-clean: CMakeFiles/run.dir/clean
-clean: CMakeFiles/tinycompiler_clean.dir/clean
+clean: CMakeFiles/Compilerlab3.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/tinyCompiler.dir
+# Target rules for target CMakeFiles/Compilerlab3.dir
 
 # All Build rule for target.
-CMakeFiles/tinyCompiler.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles --progress-num=2,3,4,5,6,7 "Built target tinyCompiler"
-.PHONY : CMakeFiles/tinyCompiler.dir/all
+CMakeFiles/Compilerlab3.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target Compilerlab3"
+.PHONY : CMakeFiles/Compilerlab3.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/tinyCompiler.dir/rule: cmake_check_build_system
+CMakeFiles/Compilerlab3.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/tinyCompiler.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Compilerlab3.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 0
-.PHONY : CMakeFiles/tinyCompiler.dir/rule
+.PHONY : CMakeFiles/Compilerlab3.dir/rule
 
 # Convenience name for target.
-tinyCompiler: CMakeFiles/tinyCompiler.dir/rule
-.PHONY : tinyCompiler
+Compilerlab3: CMakeFiles/Compilerlab3.dir/rule
+.PHONY : Compilerlab3
 
 # clean rule for target.
-CMakeFiles/tinyCompiler.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyCompiler.dir/build.make CMakeFiles/tinyCompiler.dir/clean
-.PHONY : CMakeFiles/tinyCompiler.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/run.dir
-
-# All Build rule for target.
-CMakeFiles/run.dir/all: CMakeFiles/tinyCompiler.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles --progress-num=1 "Built target run"
-.PHONY : CMakeFiles/run.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/run.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 7
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 0
-.PHONY : CMakeFiles/run.dir/rule
-
-# Convenience name for target.
-run: CMakeFiles/run.dir/rule
-.PHONY : run
-
-# clean rule for target.
-CMakeFiles/run.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/clean
-.PHONY : CMakeFiles/run.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/tinycompiler_clean.dir
-
-# All Build rule for target.
-CMakeFiles/tinycompiler_clean.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinycompiler_clean.dir/build.make CMakeFiles/tinycompiler_clean.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinycompiler_clean.dir/build.make CMakeFiles/tinycompiler_clean.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/juanitahowe/Documents/GitHub/complier/CMakeFiles --progress-num= "Built target tinycompiler_clean"
-.PHONY : CMakeFiles/tinycompiler_clean.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/tinycompiler_clean.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 0
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/tinycompiler_clean.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/juanitahowe/Documents/GitHub/complier/CMakeFiles 0
-.PHONY : CMakeFiles/tinycompiler_clean.dir/rule
-
-# Convenience name for target.
-tinycompiler_clean: CMakeFiles/tinycompiler_clean.dir/rule
-.PHONY : tinycompiler_clean
-
-# clean rule for target.
-CMakeFiles/tinycompiler_clean.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinycompiler_clean.dir/build.make CMakeFiles/tinycompiler_clean.dir/clean
-.PHONY : CMakeFiles/tinycompiler_clean.dir/clean
+CMakeFiles/Compilerlab3.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Compilerlab3.dir/build.make CMakeFiles/Compilerlab3.dir/clean
+.PHONY : CMakeFiles/Compilerlab3.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

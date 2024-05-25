@@ -1,0 +1,9 @@
+FUNC @main:
+	push 1
+	pop 
+1
+	pop 
+print
+print
+	push 0
+func declare return
