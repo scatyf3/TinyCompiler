@@ -4,6 +4,7 @@
 #include <cstring>
 #include <set>
 #include <stack>
+#include <algorithm>
 #include "../src/MIPS.h"
 #include "../src/sign_table.hpp"
 void yyerror(const char*);
@@ -36,9 +37,11 @@ SignTable* sign_table;
 %left T_And
 %left T_Eq T_Ne
 %left '<' '>' T_Le T_Ge
+%left '|' '&' '^' 
 %left '+' '-'
 %left '*' '/' '%'
-%left '!' '^' '|' '&'
+%left '!' 
+
 
 
 %%
@@ -203,16 +206,22 @@ FuncCallExpr:
         intermediate_code += "jal " + std::string($1) + "\n";
         intermediate_code += sign_table->printSignTable();
 
-        // 计算被调用者参数的数目，计算 return 需要清理的 stack 空间
+        // 计算被调用者参数的数目,计算 return 需要清理的 stack 空间
         int calleeParamCount = sign_table->get_nums_func_arg();
         
         // 查找上一个函数的 SignTable
         std::string prevFunctionName = std::string($1);
-        auto prevSignTableIter = std::find_if(functions.begin(), functions.end(), 
-            [&](SignTable* table) { return table->getIdentifier() == prevFunctionName; });
+        bool found = false;
+        SignTable* prev_sign_table = nullptr;
+        for (auto it = functions.begin(); it != functions.end(); ++it) {
+            if ((*it)->getIdentifier() == prevFunctionName) {
+                prev_sign_table = *it;
+                found = true;
+                break;
+            }
+        }
         
-        if (prevSignTableIter != functions.end()) {
-            SignTable* prev_sign_table = *prevSignTableIter;
+        if (found) {
             int prevParamCount = prev_sign_table->get_nums_func_arg();
             
             intermediate_code += "# 生成清理 stack 的指令\n";
@@ -223,7 +232,6 @@ FuncCallExpr:
         }
     }
 ;
-
 
 Actuals:    '(' ')'   {  }
        |   '(' _Actuals ')'   { }
