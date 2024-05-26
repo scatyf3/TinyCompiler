@@ -36,9 +36,12 @@ std::string SignTable::printSignTable() {
         }
     }
 
+    intermediate_code += "# Num Function Arguments: " + std::to_string(_nums_func_arg) + "\n";
+    intermediate_code += "# Num Local Variables: " + std::to_string(_nums_local_var) + "\n";
     intermediate_code += "###\n";
     return intermediate_code;
 }
+
 
 // usage
 // while parsing b = a + 1;

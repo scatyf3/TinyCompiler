@@ -9,7 +9,7 @@ void testSearchAndCalculateOffset() {
     sign_table.addSymbol({SymbolType::FUNC_ARG, "arg3"});
 
     //args 可被视作栈，先进入的在栈的更“高位”，所以offset大
-
+    std::cout<<sign_table.printSignTable()<<std::endl;
     int arg1_offset = sign_table.searchAndCalculateOffset("arg1");
     std::cout<<arg1_offset;
     assert(arg1_offset == 16);
