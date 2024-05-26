@@ -3,7 +3,7 @@
 #include <iostream>
 
 void testSearchAndCalculateOffset() {
-    SignTable sign_table;
+    SignTable sign_table = SignTable("test");
     sign_table.addSymbol({SymbolType::FUNC_ARG, "arg1"});
     sign_table.addSymbol({SymbolType::FUNC_ARG, "arg2"});
     sign_table.addSymbol({SymbolType::FUNC_ARG, "arg3"});
@@ -28,7 +28,7 @@ void testSearchAndCalculateOffset() {
     assert(invalid_offset == -1);
 }
 void testIsInSignTable() {
-    SignTable sign_table;
+    SignTable sign_table = SignTable("test");
     sign_table.addSymbol({SymbolType::FUNC_ARG, "arg1"});
     sign_table.addSymbol({SymbolType::LOCAL_VAR, "var1"});
 

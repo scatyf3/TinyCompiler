@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <set>
+#include <stack>
 #include "../src/MIPS.h"
 #include "../src/sign_table.hpp"
 void yyerror(const char*);
@@ -11,7 +12,7 @@ int yylex(void);
 std::string asm_src; //生成的汇编码
 int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_table);
 extern "C" FILE* yyin;
-std::set<std::string> functions;
+std::set<SignTable *> functions;
 SignTable* sign_table;
 %}
 
@@ -64,16 +65,16 @@ FuncName:
         intermediate_code += "sw $fp, 4($sp)\n";
         intermediate_code += "move $fp, $sp\n";
         intermediate_code += "addiu $sp, $sp, -0x100\n"; //这里是多少其实不重要🤔，只要大于local var的数目就好
-        sign_table = new SignTable();
+        sign_table = new SignTable(std::string($1));
         intermediate_code+=sign_table->printSignTable();
-        functions.insert(std::string($1));
+        functions.insert(sign_table);
         debug_log<<"FUNC @"<<std::string($1)<<":\n";
         }
     | T_main {
         MAIN(); 
-        sign_table = new SignTable();
+        sign_table = new SignTable(std::string("main"));
         intermediate_code+=sign_table->printSignTable();
-        functions.insert(std::string("main"));
+        functions.insert(sign_table);
     }
 ;
 
@@ -197,12 +198,29 @@ FuncCallStmt:
 ;
 
 FuncCallExpr:    
-        T_Identifier Actuals { 
-        debug_log<<"function "<<std::string($1)<<"\n";
-        intermediate_code +="jal "+std::string($1)+"\n";
-        intermediate_code+=sign_table->printSignTable();
-        FUNC_CALL_RETURN();
+    T_Identifier Actuals { 
+        debug_log << "function " << std::string($1) << "\n";
+        intermediate_code += "jal " + std::string($1) + "\n";
+        intermediate_code += sign_table->printSignTable();
+
+        // 计算被调用者参数的数目，计算 return 需要清理的 stack 空间
+        int calleeParamCount = sign_table->get_nums_func_arg();
         
+        // 查找上一个函数的 SignTable
+        std::string prevFunctionName = std::string($1);
+        auto prevSignTableIter = std::find_if(functions.begin(), functions.end(), 
+            [&](SignTable* table) { return table->getIdentifier() == prevFunctionName; });
+        
+        if (prevSignTableIter != functions.end()) {
+            SignTable* prev_sign_table = *prevSignTableIter;
+            int prevParamCount = prev_sign_table->get_nums_func_arg();
+            
+            intermediate_code += "# 生成清理 stack 的指令\n";
+            intermediate_code += "addiu $sp, $sp, " + std::to_string(prevParamCount * 4) + "\n";
+            //push ?
+            intermediate_code += "sw $v0, 0($sp)\n";
+            intermediate_code += "addiu $sp, $sp, -4\n";
+        }
     }
 ;
 
@@ -361,8 +379,8 @@ int main(int argc, char* argv[]) {
     yyparse();
 
     // 打印符号表
-    for (const auto& function_name : functions) {
-        std::cout << ".globl " << function_name << std::endl;
+    for (const auto& signTable : functions) {
+        std::cout << ".globl " << signTable->getIdentifier() << std::endl;
     }
     //打印data字段
     std::cout<<".data\nnewline: .asciiz \"\\n\"\n.text\n";

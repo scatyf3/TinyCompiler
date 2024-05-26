@@ -103,3 +103,6 @@ bool SignTable::isInSignTable(const std::string& name) {
 size_t SignTable::size(){
     return symbols.size();
 }
+int SignTable::get_nums_func_arg(){
+    return _nums_func_arg;
+}

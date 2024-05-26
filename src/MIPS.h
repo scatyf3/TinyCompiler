@@ -91,14 +91,6 @@ std::string intermediate_code = "";//“中间码”，但是目前用的是一�
 
 
 
-#define FUNC_CALL_RETURN() \
-    do { \
-        debug_log<<"fun call return"<<"\n";\
-        intermediate_code += "addiu $sp, $sp, 4 \n"; \
-        intermediate_code += "sw $v0, 0($sp)\n"; \
-        intermediate_code += "addiu $sp, $sp, -4\n"; \
-    } while (0)
-
 
 #define MAIN_RETURN() \
     do { \

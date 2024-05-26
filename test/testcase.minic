@@ -2,6 +2,6 @@ void myadd(int a,int b){
     return a+b;
 }
 int main(){
-    println_int(myadd(114,514));
+    println_int(1+myadd(114,514));
     return 0;
 }
