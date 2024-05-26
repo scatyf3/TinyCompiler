@@ -34,3 +34,125 @@ Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 3
 Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 117192
+
+
+12:31
+
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+114
+114
+114
+114
+114
+114
+114
+114
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+3
+2
+1
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+59224
+
+
+
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+114
+114
+114
+114
+114
+114
+114
+114
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+3
+2
+1
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+59224
+
+
+---
+
+e01.c: Correct
+e02.c: Wrong
+e03.c: Correct
+e04.c: Wrong
+e05.c: Correct
+e06.c: Correct
+e07.c: Wrong
+e08.c: Wrong
+
+---
+
+至少顺序正常了
+
+
+---Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+514
+514
+514
+514
+514
+514
+514
+514
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+117192
+
+正确的答案是: 58465
+
+感觉stack return不该用v0而应该用t0，看看demo的asm怎么写的
+
+---
+
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+-8188181
+
+---

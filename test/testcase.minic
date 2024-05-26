@@ -1,11 +1,7 @@
-void myprint(int a, int b, int c) {
-println_int(a);
-println_int(b);
-println_int(c);
+void myadd(int a,int b){
+    return a+b;
 }
-int main() {
-int a = 1, b = 2;
-int c = a + b;
-myprint(a, b, c);
-return 0;
+int main(){
+    println_int(myadd(114,514));
+    return 0;
 }

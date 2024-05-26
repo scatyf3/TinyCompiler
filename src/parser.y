@@ -170,7 +170,7 @@ AssignStmt:   T_Identifier T_assign E T_semicolon  {
     debug_log<<"assign "<<std::string($1)<<"=\n";
 };
 
-ReturnStmt: T_return E T_semicolon {   }
+ReturnStmt: T_return E T_semicolon {MIPS_POP("$v0");}
           ;
 
 StdFuncStmt:  T_std_function Actuals T_semicolon  { 
