@@ -364,7 +364,7 @@ $while_cond_1:
     lw $t0, 4($sp)
     sw $t0, -4($fp)
     addiu $sp, $sp, 4
-    
+
     j $while_cond_1
 $while_end_1:
 li $v0, 0
