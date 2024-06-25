@@ -239,4 +239,142 @@ func declare return
 
 ### 支持分支-后端部分
 
-对if语句的后端支持比较难🤔
+对if语句的后端支持比较难🤔，我们以官方文档里的例子为例先研究一下应当如何支持分支语句
+
+```c
+int main() {
+int i = 0;
+while (i < 5) {
+if (i % 2 == 0) {
+println_int(i);
+}
+i = i + 1;
+}
+return 0;
+}
+```
+
+
+```mips
+.globl main
+.data
+.text
+main:
+# main的一些调用规范
+move $fp, $sp
+addiu $sp, $sp, -8
+li $v0, 0
+sw $v0, 0($sp)
+# 声明i
+addiu $sp, $sp, -4
+lw $t0, 4($sp)
+sw $t0, -4($fp)
+addiu $sp, $sp, 4
+# while loop
+$while_cond_1:
+# eval i < 5
+    # load var i
+    lw $v0, -4($fp)
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    # load const 5
+    li $v0, 5
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    # slt
+    lw $t1, 4($sp)
+    lw $t0, 8($sp)
+    addiu $sp, $sp, 8
+    slt $t0, $t0, $t1
+    # 结果入栈
+    sw $t0, 0($sp)
+    addiu $sp, $sp, -4
+    lw $t0, 4($sp)
+    addiu $sp, $sp, 4
+    # if result = 0, aka $t0 >= $t1 goto $while_end_1 else continue
+    beq $t0, $zero, $while_end_1
+# loop body
+    # if
+    # load i
+    lw $v0, -4($fp)
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    # load 2
+    li $v0, 2
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    # eval % ==
+    lw $t1, 4($sp)
+    lw $t0, 8($sp)
+    addiu $sp, $sp, 8
+    div $t0, $t1
+    # move from higher reg??
+    mfhi $t0
+    sw $t0, 0($sp)
+    addiu $sp, $sp, -4
+    li $v0, 0
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    lw $t1, 4($sp)
+    lw $t0, 8($sp)
+    addiu $sp, $sp, 8
+    seq $t0, $t0, $t1
+    sw $t0, 0($sp)
+    addiu $sp, $sp, -4
+    # end of eval
+
+    # 用栈顶数值判断if语句是否成立
+    lw $t0, 4($sp)
+    addiu $sp, $sp, 4
+    # if t0==0，即上面seq不相等，goto $if_else_1 else continue
+    beq $t0, $zero, $if_else_1
+
+    # if body
+    # println_int(i);
+
+    lw $v0, -4($fp)
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    lw $a0, 4($sp)
+    li $v0, 1
+    syscall
+    li $v0, 11
+    li $a0, 0x0A
+    syscall
+    addiu $sp, $sp, 4
+    # end of if body
+
+    j $if_end_1
+    $if_else_1:
+    $if_end_1:
+
+
+    lw $v0, -4($fp)
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    li $v0, 1
+    sw $v0, 0($sp)
+    addiu $sp, $sp, -4
+    lw $t1, 4($sp)
+    lw $t0, 8($sp)
+    addiu $sp, $sp, 8
+    add $t0, $t0, $t1
+    sw $t0, 0($sp)
+    addiu $sp, $sp, -4
+    lw $t0, 4($sp)
+    sw $t0, -4($fp)
+    addiu $sp, $sp, 4
+    
+    j $while_cond_1
+$while_end_1:
+li $v0, 0
+sw $v0, 0($sp)
+addiu $sp, $sp, -4
+lw $v0, 4($sp)
+addiu $sp, $sp, 4
+li $v0, 10
+syscall
+
+```
+
+

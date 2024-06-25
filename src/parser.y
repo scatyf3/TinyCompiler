@@ -115,6 +115,7 @@ Stmt:      DeclStmt
          | StdFuncStmt 
          | FuncCallStmt
          | BranchStmt
+         | LoopStmt
          ;
 
 
@@ -259,9 +260,62 @@ _Actuals:
 ;
 
 
-BranchStmt : T_if '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
-           | T_if '(' E ')' '{' Stmts '}' T_else '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
-           ;
+BranchStmt : 
+    T_if '(' E ')' IfBody { 
+        debug_log<<"if stmt"<<"\n"; 
+        //用栈顶数值判断if语句是否成立
+        MIPS_POP("$t0");
+        //if t0==0，即上面seq不相等，goto $if_else_1 else continue
+        intermediate_code+="beq $t0, $zero, $if_end_1\n";
+    }
+    | T_if '(' E ')' IfBody T_else '(' E ')' ElseBody { 
+        debug_log<<"if stmt"<<"\n"; 
+        //用栈顶数值判断if语句是否成立
+        MIPS_POP("$t0");
+        //if t0==0，即上面seq不相等，goto $if_else_1 else continue
+        intermediate_code+="beq $t0, $zero, $if_end_1\n"; 
+        //TODO: 处理else stmt🤔
+    }
+    ;
+
+
+IfBody: '{' Stmts '}' {
+    //在if语句结束的地方打一个tag
+    //TODO:这些tag们随着语句的复杂，应该有不同的编号
+    intermediate_code += "$if_end_1:\n";
+};
+
+ElseBody: '{' Stmts '}' {
+    //在if语句结束的地方打一个tag
+    //TODO:这些tag们随着语句的复杂，应该有不同的编号
+    intermediate_code += "$if_else_1:\n";
+};
+
+
+LoopStmt: T_while WhileBody LoopBody { 
+    debug_log<<"LoopCond"<<"\n"; 
+    intermediate_code+="$while_cond_1:"; 
+} ;
+
+
+WhileBody: '(' E ')' { 
+    debug_log<<"Loop"<<"\n"; 
+    //用栈顶数值判断if语句是否成立
+    MIPS_POP("$t0");
+    //if t0==0，即上面seq不相等，goto $if_else_1 else continue
+    intermediate_code+="beq $t0, $zero, $while_end_1\n"; 
+    debug_log<<"StartLoopBody"<<"\n"; 
+};
+
+
+LoopBody: '{' Stmts '}' {
+    //在if语句结束的地方打一个tag
+    //TODO:这些tag们随着语句的复杂，应该有不同的编号
+    debug_log<<"EndLoopBody"<<"\n"; 
+    intermediate_code += "j $while_cond_1\n";
+    intermediate_code += "$while_end_1:\n";
+};
+
 
 E: E '+' E {
     EVAL_PRE();
