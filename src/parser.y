@@ -259,28 +259,34 @@ _Actuals:
     }
 ;
 
+//TODO j if end
 
 BranchStmt : 
-    T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}'{ 
+    T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' EndIf ElseStmts{ 
         debug_log<<"if stmt"<<"\n"; 
-        intermediate_code += "$if_end_1:\n";
-    }
-    | T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}'  T_else '(' TrueFalseExpressionIF ')' '{' Stmts '}' { 
-        debug_log<<"if stmt"<<"\n"; 
-        //用栈顶数值判断if语句是否成立
-        MIPS_POP("$t0");
-        //if t0==0，即上面seq不相等，goto $if_else_1 else continue
-        intermediate_code+="beq $t0, $zero, $if_end_1\n"; 
-        //TODO: 处理else stmt🤔
     }
     ;
+
+EndIf: { intermediate_code+="j $if_end_1\n";};
+
+ElseStmts : /*第一种可能，else或许为空*/
+          |  T_else T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' ElseStmts {/*理论上分支语句的中间可以叠加无限的else if，但是先暂时不写这部分*/}
+          |  T_else ElseDO '{' Stmts '}' EndElseStmt{ }
+          ;
+
+
+EndElseStmt : {intermediate_code += "$if_end_1:\n";  };
+          
 
 TrueFalseExpressionIF : E {
     //用栈顶数值判断if语句是否成立
     MIPS_POP("$t0");
     //if t0==0，即上面seq不相等，goto $if_else_1 else continue
-    intermediate_code+="beq $t0, $zero, $if_end_1\n";
+    intermediate_code+="beq $t0, $zero, $if_else_1\n";
 };
+
+
+ElseDO : /*推导为空，打tag用*/{ intermediate_code += "$if_else_1:\n";};
 
 LoopStmt: T_while Cond WhileBody {
     debug_log<<"LoopCond"<<"\n"; 
