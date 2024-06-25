@@ -155,4 +155,97 @@ Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 -8188181
 
----
+----
+
+---Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+Running testcase: ../test/cases_3/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+---------------------------------------
+Running testcase: ../test/cases_3/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+---------------------------------------
+Running testcase: ../test/cases_3/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_3/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+---------------------------------------
+Running testcase: ../test/cases_3/e09.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+---------------------------------------
+Running testcase: ../test/cases_3/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+---------------------------------------
+Running testcase: ../test/cases_3/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+---------------------------------------
+Running testcase: ../test/cases_3/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_3/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+---------------------------------------
+Running testcase: ../test/cases_3/e09.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+92
+0
+0
+---------------------------------------

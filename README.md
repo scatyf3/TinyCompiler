@@ -146,3 +146,35 @@ addiu $sp, $sp, 4
 - 114
 - 628
 ```
+
+
+#### fix 嵌套调用
+
+据@Lucius同学说，e04和e07的问题是嵌套调用，如果`e09.c`work就能全对
+
+```
+Running testcase: ../test/cases_3/e09.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+92
+0
+0
+```
+
+但是我本地的情况是e09 work？？
+
+
+## 实验四
+
+### 新功能
+
+- 支持分支和循环关键字：if, else, while, continue, break
+- 支持条件语句，分支语句
+    - 条件语句 if ( condition6 ) { ... }
+    - if ( condition6 ) { ... } else { ...  }
+    - 循环语句 while ( condition) { ... }
+    - 循环控制语句 continue; break;
+- MISC: 优化？
+
+
+
+
