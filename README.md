@@ -377,4 +377,38 @@ syscall
 
 ```
 
+特别地，在编码的过程中，我们发现为了更好的进行语法制导翻译，需要将括号中的表达式新建一个规则
 
+```
+TrueFalseExpression : E{
+    //用栈顶数值判断if语句是否成立
+    MIPS_POP("$t0");
+    //if t0==0，即上面seq不相等，goto $if_else_1 else continue
+    intermediate_code+="beq $t0, $zero, $if_end_1\n";
+};
+```
+
+这样，在正常的expression推导之后，额外进行一个beq计算，完成条件判断，而跳转用的分支放置在Stmts parse结束之后即可
+
+```
+    T_if '(' TrueFalseExpression ')' '{' Stmts '}'{ 
+        debug_log<<"if stmt"<<"\n"; 
+        intermediate_code += "$if_end_1:\n";
+    }
+```
+
+### Else statment
+
+
+
+### 支持循环-后端
+
+在循环的部分，比起if，我们还需要在while循环开始之前插入一个while condition的标签，需要加入两个“空推导,idea来自[这篇文章](https://pandolia.net/tinyc/ch16_tinyc_compiler.html)
+
+```
+LoopStmt: T_while Cond WhileBody {
+    debug_log<<"LoopCond"<<"\n"; 
+};
+
+Cond: {intermediate_code+="$while_cond_1:"; };
+```

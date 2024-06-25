@@ -261,11 +261,11 @@ _Actuals:
 
 
 BranchStmt : 
-    T_if '(' TrueFalseExpression ')' '{' Stmts '}'{ 
+    T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}'{ 
         debug_log<<"if stmt"<<"\n"; 
         intermediate_code += "$if_end_1:\n";
     }
-    | T_if '(' TrueFalseExpression ')' '{' Stmts '}'  T_else '(' TrueFalseExpression ')' '{' Stmts '}' { 
+    | T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}'  T_else '(' TrueFalseExpressionIF ')' '{' Stmts '}' { 
         debug_log<<"if stmt"<<"\n"; 
         //用栈顶数值判断if语句是否成立
         MIPS_POP("$t0");
@@ -275,35 +275,34 @@ BranchStmt :
     }
     ;
 
-TrueFalseExpression : E{
+TrueFalseExpressionIF : E {
     //用栈顶数值判断if语句是否成立
     MIPS_POP("$t0");
     //if t0==0，即上面seq不相等，goto $if_else_1 else continue
     intermediate_code+="beq $t0, $zero, $if_end_1\n";
 };
 
-LoopStmt: T_while WhileBody LoopBody { 
+LoopStmt: T_while Cond WhileBody {
     debug_log<<"LoopCond"<<"\n"; 
-    intermediate_code+="$while_cond_1:"; 
-} ;
+    
+};
+
+Cond: {intermediate_code+="$while_cond_1:"; };
 
 
-WhileBody: '(' E ')' { 
+TrueFalseExpressionLOOP : E {
     //用栈顶数值判断if语句是否成立
     MIPS_POP("$t0");
     //if t0==0，即上面seq不相等，goto $if_else_1 else continue
-    intermediate_code+="beq $t0, $zero, $while_end_1\n"; 
-    debug_log<<"StartLoopBody"<<"\n"; 
+    intermediate_code+="beq $t0, $zero, $while_end_1\n";
 };
 
-
-LoopBody: '{' Stmts '}' {
-    //在if语句结束的地方打一个tag
-    //TODO:这些tag们随着语句的复杂，应该有不同的编号
+WhileBody: '(' TrueFalseExpressionLOOP ')' '{' Stmts '}' { 
     debug_log<<"EndLoopBody"<<"\n"; 
     intermediate_code += "j $while_cond_1\n";
     intermediate_code += "$while_end_1:\n";
-};
+} ;
+
 
 
 E: E '+' E {
