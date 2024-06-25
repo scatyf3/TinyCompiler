@@ -34,6 +34,11 @@ WHITESPACE      [ \n\t\r\a]+*
 "return"                 { return T_return; }
 "main"                   { return T_main; }
 "println_int"            { return T_std_function; }
+"if"                     { return T_if; }
+"else"                   { return T_else; }
+"while"                  { return T_while; }
+"continue"               { return T_continue; }
+"break"                  { return T_break; }
 {INTEGER}                { yylval = strdup(yytext); return T_IntConstant; }
 {IDENTIFIER}             { yylval = strdup(yytext); return T_Identifier; }
 "\n"                     {cur_line++;}

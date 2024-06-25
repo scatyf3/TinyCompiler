@@ -31,6 +31,7 @@ SignTable* sign_table;
 %token T_semicolon
 %token T_main
 %token T_Le T_Ge T_Eq T_Ne T_And T_Or
+%token T_if T_else T_while T_continue T_break
 
 %left '='
 %left T_Or
@@ -113,6 +114,7 @@ Stmt:      DeclStmt
          | ReturnStmt 
          | StdFuncStmt 
          | FuncCallStmt
+         | BranchStmt
          ;
 
 
@@ -233,6 +235,7 @@ FuncCallExpr:
     }
 ;
 
+
 Actuals:    '(' ')'   {  }
        |   '(' _Actuals ')'   { }
        ;
@@ -254,6 +257,11 @@ _Actuals:
         debug_log<<std::string($1)<<"\n";
     }
 ;
+
+
+BranchStmt : T_if '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
+           | T_if '(' E ')' '{' Stmts '}' T_else '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
+           ;
 
 E: E '+' E {
     EVAL_PRE();

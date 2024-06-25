@@ -176,5 +176,67 @@ Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 - MISC: 优化？
 
 
+### 支持分支-前端部分
 
+先修改tokenrizer -> 很简单，很显然
 
+#### 分支的语法
+
+```
+if
+if (else if) x n else
+```
+
+一般必须有if，但是后面的部分都是可选的🤔
+
+我们先迭代式修改，先支持纯if或者if-else再说，e01~e08里似乎并没有else if，所以我们简单修改parser
+
+```
+Stmt:      DeclStmt
+         | AssignStmt
+         | ReturnStmt 
+         | StdFuncStmt 
+         | FuncCallStmt
+         | BranchStmt
+         ;
+BranchStmt : T_if '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
+           | T_if '(' E ')' '{' Stmts '}' T_else '(' E ')' '{' Stmts '}' { debug_log<<"TODO: here is an if stmt"<<"\n"; }
+           ;
+```
+
+以e01为输入，发现输出的“伪三地址码”如下，说明简单的词法和语法识别work
+
+```
+FUNC @main:
+	push 5
+	pop 
+assign a=
+	push 3
+	pop 
+assign b=
+	push var offset = -4
+	push var offset = -8
+	eval exp
+	le
+	push var offset = -4
+	pop 
+a
+	pop 
+print
+print
+TODO: here is an if stmt
+	push var offset = -8
+	pop 
+b
+	pop 
+print
+print
+	push 0
+	pop 
+func declare return
+
+```
+
+### 支持分支-后端部分
+
+对if语句的后端支持比较难🤔
