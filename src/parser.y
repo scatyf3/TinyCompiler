@@ -20,7 +20,7 @@ int loop_counter = 0;
 int if_counter = 0;
 %}
 
-%error-verbose
+%define parse.error verbose
 
 
 
