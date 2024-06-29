@@ -119,6 +119,7 @@ Stmt:      DeclStmt
          | FuncCallStmt
          | BranchStmt
          | LoopStmt
+         | BreakStmt
          ;
 
 
@@ -272,13 +273,16 @@ BranchStmt :
 
 EndIf: { intermediate_code+="j $if_end_1\n";};
 
-ElseStmts : /*第一种可能，else或许为空*/
+ElseStmts : ElseDO EndElseStmt {/*else有可能为空，但是打tag的两个空推导不能删除🤔*/}
           |  T_else T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' ElseStmts {/*理论上分支语句的中间可以叠加无限的else if，但是先暂时不写这部分*/}
           |  T_else ElseDO '{' Stmts '}' EndElseStmt{ }
           ;
 
 
-EndElseStmt : {intermediate_code += "$if_end_1:\n";  };
+EndElseStmt : {
+    intermediate_code+="#tag\n";
+    intermediate_code += "$if_end_1:\n";  
+};
           
 
 TrueFalseExpressionIF : E {
@@ -289,7 +293,10 @@ TrueFalseExpressionIF : E {
 };
 
 
-ElseDO : /*推导为空，打tag用*/{ intermediate_code += "$if_else_1:\n";};
+ElseDO : /*推导为空，打tag用*/{ 
+    intermediate_code+="#tag\n";
+    intermediate_code += "$if_else_1:\n";
+};
 
 LoopStmt: T_while Cond WhileBody {
     debug_log<<"LoopCond"<<"\n"; 
@@ -318,6 +325,16 @@ WhileBody: '(' TrueFalseExpressionLOOP ')' '{' Stmts '}' {
     intermediate_code += "$while_end_" + std::to_string(loop_stack.top()) + ":\n";
     loop_stack.pop();
 } ;
+
+BreakStmt: T_break T_semicolon {
+    //check if is in loop
+    if(loop_stack.empty()){
+        intermediate_code +="Break error";
+        std::exit(1);
+    }else{
+        intermediate_code += "j $while_end_" + std::to_string(loop_stack.top()) + ";\n";
+    }
+};
 
 
 E: E '+' E {
