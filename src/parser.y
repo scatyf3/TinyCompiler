@@ -120,6 +120,7 @@ Stmt:      DeclStmt
          | BranchStmt
          | LoopStmt
          | BreakStmt
+         | ContStmt
          ;
 
 
@@ -267,11 +268,10 @@ _Actuals:
 BranchStmt : 
     T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' EndIf ElseStmts{ 
         debug_log<<"if stmt"<<"\n"; 
-        if_counter++;
     }
     ;
 
-EndIf: { intermediate_code+="j $if_end_1\n";};
+EndIf: { intermediate_code+="j $if_end_"+ std::to_string(if_counter) + ";\n";};
 
 ElseStmts : ElseDO EndElseStmt {/*else有可能为空，但是打tag的两个空推导不能删除🤔*/}
           |  T_else T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' ElseStmts {/*理论上分支语句的中间可以叠加无限的else if，但是先暂时不写这部分*/}
@@ -281,21 +281,22 @@ ElseStmts : ElseDO EndElseStmt {/*else有可能为空，但是打tag的两个空
 
 EndElseStmt : {
     intermediate_code+="#tag\n";
-    intermediate_code += "$if_end_1:\n";  
+    intermediate_code += "$if_end_"+ std::to_string(if_counter) + ":\n";  
 };
           
 
 TrueFalseExpressionIF : E {
     //用栈顶数值判断if语句是否成立
     MIPS_POP("$t0");
+    if_counter++;
     //if t0==0，即上面seq不相等，goto $if_else_1 else continue
-    intermediate_code+="beq $t0, $zero, $if_else_1\n";
+    intermediate_code+="beq $t0, $zero, $if_else_"+ std::to_string(if_counter) + ";\n";
 };
 
 
 ElseDO : /*推导为空，打tag用*/{ 
     intermediate_code+="#tag\n";
-    intermediate_code += "$if_else_1:\n";
+    intermediate_code += "$if_else_"+ std::to_string(if_counter) + ":\n"; 
 };
 
 LoopStmt: T_while Cond WhileBody {
@@ -332,9 +333,22 @@ BreakStmt: T_break T_semicolon {
         intermediate_code +="Break error";
         std::exit(1);
     }else{
+        intermediate_code+="# break stmt\n";
         intermediate_code += "j $while_end_" + std::to_string(loop_stack.top()) + ";\n";
     }
 };
+
+ContStmt: T_continue T_semicolon{
+        //check if is in loop
+    if(loop_stack.empty()){
+        intermediate_code +="Continue error";
+        std::exit(1);
+    }else{
+        intermediate_code+="# Continue stmt\n";
+        intermediate_code += "j $while_cond_" + std::to_string(loop_stack.top()) + ";\n";
+    }
+};
+
 
 
 E: E '+' E {

@@ -533,7 +533,72 @@ $if_end_1
 
 ### 支持多个分支语句
 
-同理，对分支语句也做这样的修改
+同理，对分支语句也做这样的修改，但是发现case06只会输出0，初步怀疑是直接break了🤔，但是经过check不是，如果对第二个分支加一个print114514，则
 
+```
+(base) ➜  build git:(main) ✗ spim -file ../out/test.asm;
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114514
+0
+```
+所以是进入第二个分支之后，卡在了某个地方？在循环内if外加入一个print i
+
+```
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+0
+0
+1
+```
+
+感觉卡在了奇怪的地方，用朴素的断点法
+
+```
+int main() {
+    int i = 0;
+
+    while (i < 11) {
+        println_int(i);
+        if (i % 7 == 3) {
+            println_int(i);
+            println_int(i);
+            break;
+        }
+        println_int(114);
+        
+        if (i % 2 == 0) {
+            println_int(i);
+        }
+        i = i + 1;
+        println_int(514);
+    }
+    
+    return 0;
+}
+
+```
+
+发现刷屏114🤔，which提供了排查方向，卡在了break和第二个if之间，排查发现有两个beq用了一个if tag
+
+
+e06 攻克
+
+
+### 支持continue
+
+感觉这关键字没怎么用过🥶看看cpp ref，「The continue statement causes a jump, as if by goto to the end of the loop body」，它到 判断循环是否继续的开始处，就是
+
+```
+ContStmt: T_continue T_semicolon{
+        //check if is in loop
+    if(loop_stack.empty()){
+        intermediate_code +="Continue error";
+        std::exit(1);
+    }else{
+        intermediate_code+="# Continue stmt\n";
+        intermediate_code += "j $while_cond_" + std::to_string(loop_stack.top()) + ";\n";
+    }
+};
+
+```
 
 
