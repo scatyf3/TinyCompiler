@@ -413,3 +413,72 @@ Cond: {intermediate_code+="$while_cond_1:"; };
 截止到这里，e01和e02似乎都work了，开心😆
 
 ### 支持Else-后端
+
+![if-else原理](image-1.png)
+
+原理大抵如此，仿照这上面while的idea，写入了更好的加tag的方法，和向else if扩展的可能性
+
+
+### 支持多个循环语句
+
+正如e05，我们需要给tag编号以标识不同的分支和循环语句，一个朴素的方法是构建一个全局的条件语句和循环语句的计数器（但是如何处理else if 仍是TODO），我们先动手实现下这个朴素的idea
+
+```
+LoopStmt: T_while Cond WhileBody {
+    debug_log<<"LoopCond"<<"\n"; 
+};
+
+Cond: { 
+    loop_counter++;
+    intermediate_code+="$while_cond_" + std::to_string(loop_counter) + ":\n"; 
+};
+```
+
+但是loop_counter好像不对，在后面执行完毕循环体，返回条件的时候，两个while_cond_ tag都变成2了，明日再说吧！
+
+---
+
+感觉嵌套的while tag的结构应当是
+
+```sudo code
+while_cond_1:
+while_cond_2:
+j while_cond_2
+j while_cond_1
+```
+
+这让我们想到了一个数据结构，stack🤔
+
+看看别人怎么搞的
+
+```
+#define _BEG_WHILE  (wstack[++wtop] = ++ww)
+#define _END_WHILE  (wtop--)
+#define _w          (wstack[wtop])
+```
+
+好像还真是🤔，我真聪明🥺（呕呕）
+
+---
+
+还要处理end tag的问题
+
+```sudo code
+while_cond_1:
+[cond 1]
+while_cond_2:
+[cond 2]
+[code 2]
+j while_cond_2
+while_end_2
+[code 1]
+j while_cond_1
+while_end_1
+
+```
+
+好像只是end和j共用一个stack的top就好
+
+### 支持多个分支语句
+
+同理，对分支语句也做这样的修改

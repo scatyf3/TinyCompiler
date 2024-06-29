@@ -15,6 +15,9 @@ int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_ta
 extern "C" FILE* yyin;
 std::set<SignTable *> functions;
 SignTable* sign_table;
+std::stack<int> loop_stack;
+int loop_counter = 0;
+int if_counter = 0;
 %}
 
 %error-verbose
@@ -223,7 +226,6 @@ FuncCallExpr:
                 break;
             }
         }
-        
         if (found) {
             int prevParamCount = prev_sign_table->get_nums_func_arg();
             
@@ -264,6 +266,7 @@ _Actuals:
 BranchStmt : 
     T_if '(' TrueFalseExpressionIF ')' '{' Stmts '}' EndIf ElseStmts{ 
         debug_log<<"if stmt"<<"\n"; 
+        if_counter++;
     }
     ;
 
@@ -290,25 +293,31 @@ ElseDO : /*推导为空，打tag用*/{ intermediate_code += "$if_else_1:\n";};
 
 LoopStmt: T_while Cond WhileBody {
     debug_log<<"LoopCond"<<"\n"; 
-    
 };
 
-Cond: {intermediate_code+="$while_cond_1:"; };
+Cond: { 
+    loop_counter++;
+    loop_stack.push(loop_counter);
+    intermediate_code+="#tag\n";
+    intermediate_code+="$while_cond_" + std::to_string(loop_counter) + ":\n"; 
+};
 
 
 TrueFalseExpressionLOOP : E {
     //用栈顶数值判断if语句是否成立
     MIPS_POP("$t0");
-    //if t0==0，即上面seq不相等，goto $if_else_1 else continue
-    intermediate_code+="beq $t0, $zero, $while_end_1\n";
+    //if t0==0，即上面seq不相等，goto $if_else_loop_counter else continue
+    intermediate_code+="beq $t0, $zero, $while_end_" + std::to_string(loop_counter) + "\n";
 };
 
 WhileBody: '(' TrueFalseExpressionLOOP ')' '{' Stmts '}' { 
     debug_log<<"EndLoopBody"<<"\n"; 
-    intermediate_code += "j $while_cond_1\n";
-    intermediate_code += "$while_end_1:\n";
+    intermediate_code += "j $while_cond_" + std::to_string(loop_stack.top()) + "\n";
+    
+    intermediate_code+="#tag\n";
+    intermediate_code += "$while_end_" + std::to_string(loop_stack.top()) + ":\n";
+    loop_stack.pop();
 } ;
-
 
 
 E: E '+' E {
