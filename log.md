@@ -602,3 +602,78 @@ ContStmt: T_continue T_semicolon{
 ```
 
 
+
+
+## 增补 lab3
+
+问了助教老师，似乎藏起来的e07，e08有负号和～运算符，怀疑自己缺少这方面
+
+```
+
+int main(){
+    int a = 114514;
+    println_int(-a);
+    println_int(~a);
+    return 0;
+}
+
+```
+
+目前有几个问题：
+- -,~,!的后端怎么实现
+- 导致shitf-reduce冲突
+
+```
+   66  | '~' E
+   state 76
+
+   50 E: E . '+' E
+   51  | E . '-' E
+   52  | E . '*' E
+   53  | E . '/' E
+   54  | E . '%' E
+   55  | E . '>' E
+   56  | E . '<' E
+   57  | E . T_Ge E
+   58  | E . T_Le E
+   59  | E . T_Eq E
+   60  | E . T_Ne E
+   61  | E . T_Or E
+   62  | E . T_And E
+   63  | E . '^' E
+   66  | '~' E .
+
+    T_Le   shift, and go to state 78
+    T_Ge   shift, and go to state 79
+    T_Eq   shift, and go to state 80
+    T_Ne   shift, and go to state 81
+    T_And  shift, and go to state 82
+    T_Or   shift, and go to state 83
+    '<'    shift, and go to state 84
+    '>'    shift, and go to state 85
+    '^'    shift, and go to state 86
+    '+'    shift, and go to state 87
+    '-'    shift, and go to state 88
+    '*'    shift, and go to state 89
+    '/'    shift, and go to state 90
+    '%'    shift, and go to state 91
+
+    T_Le      [reduce using rule 66 (E)]
+    T_Ge      [reduce using rule 66 (E)]
+    T_Eq      [reduce using rule 66 (E)]
+    T_Ne      [reduce using rule 66 (E)]
+    T_And     [reduce using rule 66 (E)]
+    T_Or      [reduce using rule 66 (E)]
+    '<'       [reduce using rule 66 (E)]
+    '>'       [reduce using rule 66 (E)]
+    '^'       [reduce using rule 66 (E)]
+    '+'       [reduce using rule 66 (E)]
+    '-'       [reduce using rule 66 (E)]
+    '*'       [reduce using rule 66 (E)]
+    '/'       [reduce using rule 66 (E)]
+    '%'       [reduce using rule 66 (E)]
+    $default  reduce using rule 66 (E)
+
+```
+
+虽然但是，为什么会冲突，没看明白

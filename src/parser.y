@@ -20,8 +20,7 @@ int loop_counter = 0;
 int if_counter = 0;
 %}
 
-%define parse.error verbose
-
+%error-verbose
 
 
 %token T_Identifier T_IntConstant
@@ -437,25 +436,28 @@ E: E '+' E {
     EVAL_AFTER();
     debug_log << "\txor\n";
 }
-| E '|' E {
-    EVAL_PRE();
-    intermediate_code += "or $t0, $t0, $t1\n";
-    EVAL_AFTER();
-    debug_log << "\tbitwise or\n";
-}
-| E '&' E {
-    EVAL_PRE();
-    intermediate_code += "and $t0, $t0, $t1\n";
-    EVAL_AFTER();
-    debug_log << "\tbitwise and\n";
-}
-| '-' E %prec '!' {
-    intermediate_code += "\tneg ";
+| '-' E  {
+    MIPS_POP("$t0");
+    intermediate_code += "sub $t0, $zero, $t0\n";
+    //push t0 into stack
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
     debug_log << "\tnegation\n";
 }
 | '!' E {
-    intermediate_code += "\tnot ";
+    MIPS_POP("$t0");
+    intermediate_code += "sub $t0, $zero, $t0\n";
+    //push t0 into stack
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
     debug_log << "\tlogical not\n";
+}
+| '~' E {
+    MIPS_POP("$t0");
+    intermediate_code += "nor $t0, $t0, $zero\n";
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
+    debug_log << "\tbitwise not\n";
 }
 | T_IntConstant            { 
     MIPS_PUSH_CONST($1);
