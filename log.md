@@ -677,3 +677,57 @@ int main(){
 ```
 
 虽然但是，为什么会冲突，没看明白
+
+---
+
+发现tokenrizer没算~和！，这样就解释的通了，修改tokenrizer后，冲突消失，上面的case可以打印出正确结果
+
+```sh
+(base) ➜  build git:(main) ✗ spim -file ../out/test.asm;
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+-114514
+-114515
+```
+
+提交后发现case7正确，但是case8不对，怀疑是！运算符还有问题
+
+### !运算符
+
+```
+int main(){
+    int a = 0;
+    if(!a){
+        println_int(114);
+    }else{
+        println_int(514);
+    }
+    return 0;
+}
+```
+
+好像！不可以用简单的逻辑实现，我们使用beq和简单分支
+
+```
+| '!' E {
+    MIPS_POP("$t0");
+    intermediate_code += "beq $t0, $zero, is_zero\nli $t0, 0  # 操作数不为 0,则结果为 0\nj end_not\nis_zero:\nli $t0, 1  # 操作数为 0,则结果为 1\nend_not:\n";
+    //push t0 into stack
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
+    debug_log << "\tlogical not\n";
+}
+```
+
+如此的实现发现运行结果正确，但是似乎存在冲突，怀疑是tokenrizer？总之先提交试试
+
+```sh
+(main) ✗ make run
+bison -vdty -o y.tab.cpp -d ../src/parser.y
+conflicts: 14 shift/reduce
+g++ -c -o y.tab.o y.tab.cpp -std=c++14 -fsanitize=undefined
+g++ -o tcc lex.yy.o y.tab.o sign_table.o -ll -lm -std=c++14 -fsanitize=undefined
+./tcc ../test/testcase.minic > ../out/test.asm
+(base) ➜  build git:(main) ✗ spim -file ../out/test.asm;
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+```

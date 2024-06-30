@@ -446,7 +446,7 @@ E: E '+' E {
 }
 | '!' E {
     MIPS_POP("$t0");
-    intermediate_code += "sub $t0, $zero, $t0\n";
+    intermediate_code += "beq $t0, $zero, is_zero\nli $t0, 0  # 操作数不为 0,则结果为 0\nj end_not\nis_zero:\nli $t0, 1  # 操作数为 0,则结果为 1\nend_not:\n";
     //push t0 into stack
     intermediate_code += "sw $t0, 0($sp)\n";
     intermediate_code += "addiu $sp, $sp, -4\n";
