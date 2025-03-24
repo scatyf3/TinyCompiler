@@ -1,9 +1,7 @@
-int main() {
-    int a = 5, b = 3;
-    if (a <= b) {
-        println_int(a);
-    }
-
-    println_int(b);
+int main(){
+    int a = 114;
+    int b = 514;
+    int c = a<b;
+    println_int(c);
     return 0;
 }

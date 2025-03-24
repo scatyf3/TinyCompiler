@@ -66,19 +66,53 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     T_IntConstant = 258,
-     T_Identifier = 259,
+     T_Identifier = 258,
+     T_IntConstant = 259,
      T_std_function = 260,
      T_keyword = 261,
-     T_operator = 262
+     T_operator = 262,
+     T_int = 263,
+     T_void = 264,
+     T_return = 265,
+     T_assign = 266,
+     T_semicolon = 267,
+     T_main = 268,
+     T_Le = 269,
+     T_Ge = 270,
+     T_Eq = 271,
+     T_Ne = 272,
+     T_And = 273,
+     T_Or = 274,
+     T_if = 275,
+     T_else = 276,
+     T_while = 277,
+     T_continue = 278,
+     T_break = 279
    };
 #endif
 /* Tokens.  */
-#define T_IntConstant 258
-#define T_Identifier 259
+#define T_Identifier 258
+#define T_IntConstant 259
 #define T_std_function 260
 #define T_keyword 261
 #define T_operator 262
+#define T_int 263
+#define T_void 264
+#define T_return 265
+#define T_assign 266
+#define T_semicolon 267
+#define T_main 268
+#define T_Le 269
+#define T_Ge 270
+#define T_Eq 271
+#define T_Ne 272
+#define T_And 273
+#define T_Or 274
+#define T_if 275
+#define T_else 276
+#define T_while 277
+#define T_continue 278
+#define T_break 279
 
 
 
@@ -87,29 +121,24 @@
 #line 1 "../src/parser.y"
 
 #include <iostream>
-#include <vector>
-using namespace std;
-
-extern "C" int yylex();
+#include <stdlib.h>
+#include <cstring>
+#include <set>
+#include <stack>
+#include <algorithm>
+#include "../src/MIPS.h"
+#include "../src/sign_table.hpp"
+void yyerror(const char*);
+int yylex(void);
+#define YYSTYPE char *
+std::string asm_src; //生成的汇编码
+int searchAndCalculateOffset(const char* symbol,std::vector<std::string> sign_table);
 extern "C" FILE* yyin;
-void yyerror(const char* s);
-
-enum TokenType {
-    IntConstant,
-    Identifier,
-    StdFunction,
-    Keyword,
-    Operator
-};
-
-struct Token {
-    string lexeme;
-    TokenType type;
-    Token(const string& l, TokenType t) : lexeme(l), type(t) {}
-};
-
-vector<Token> tokens;
-
+std::set<SignTable *> functions;
+SignTable* sign_table;
+std::stack<int> loop_stack;
+int loop_counter = 0;
+int if_counter = 0;
 
 
 /* Enabling traces.  */
@@ -122,7 +151,7 @@ vector<Token> tokens;
 # undef YYERROR_VERBOSE
 # define YYERROR_VERBOSE 1
 #else
-# define YYERROR_VERBOSE 0
+# define YYERROR_VERBOSE 1
 #endif
 
 /* Enabling the token table.  */
@@ -131,14 +160,7 @@ vector<Token> tokens;
 #endif
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 28 "../src/parser.y"
-{
-    char* lexeme;
-}
-/* Line 193 of yacc.c.  */
-#line 141 "y.tab.c"
-	YYSTYPE;
+typedef int YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -150,7 +172,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 154 "y.tab.c"
+#line 176 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -365,20 +387,20 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   7
+#define YYLAST   365
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  8
+#define YYNTOKENS  43
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  8
+#define YYNNTS  30
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  13
+#define YYNRULES  71
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  14
+#define YYNSTATES  147
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   262
+#define YYMAXUTOK   279
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -389,16 +411,16 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    36,     2,     2,     2,    35,    29,     2,
+      39,    40,    33,    31,    41,    32,     2,    34,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      26,    25,    27,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,    30,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    37,    28,    38,    42,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -412,7 +434,8 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YYDEBUG
@@ -420,23 +443,57 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     4,     7,     9,    11,    13,    15,    17,
-      19,    21,    23,    25
+       0,     0,     3,     4,     7,    14,    21,    23,    25,    28,
+      32,    35,    40,    41,    44,    46,    48,    50,    52,    54,
+      56,    58,    60,    62,    66,    68,    72,    76,    82,    87,
+      91,    95,    98,   101,   104,   108,   110,   114,   124,   125,
+     128,   138,   145,   146,   148,   149,   153,   154,   156,   163,
+     166,   169,   173,   177,   181,   185,   189,   193,   197,   201,
+     205,   209,   213,   217,   221,   225,   228,   231,   234,   236,
+     238,   240
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-       9,     0,    -1,    -1,     9,    10,    -1,    11,    -1,    12,
-      -1,    13,    -1,    14,    -1,    15,    -1,     7,    -1,     3,
-      -1,     4,    -1,     5,    -1,     6,    -1
+      44,     0,    -1,    -1,    44,    45,    -1,     8,    46,    47,
+      37,    49,    38,    -1,     9,    46,    47,    37,    49,    38,
+      -1,     3,    -1,    13,    -1,    39,    40,    -1,    39,    48,
+      40,    -1,     8,     3,    -1,    48,    41,     8,     3,    -1,
+      -1,    49,    50,    -1,    51,    -1,    53,    -1,    54,    -1,
+      55,    -1,    56,    -1,    60,    -1,    66,    -1,    70,    -1,
+      71,    -1,     8,    52,    12,    -1,     3,    -1,     3,    11,
+      72,    -1,    52,    41,     3,    -1,    52,    41,     3,    11,
+      72,    -1,     3,    11,    72,    12,    -1,    10,    72,    12,
+      -1,     5,    58,    12,    -1,    57,    12,    -1,     3,    58,
+      -1,    39,    40,    -1,    39,    59,    40,    -1,    72,    -1,
+      72,    41,    59,    -1,    20,    39,    64,    40,    37,    49,
+      38,    61,    62,    -1,    -1,    65,    63,    -1,    21,    20,
+      39,    64,    40,    37,    49,    38,    62,    -1,    21,    65,
+      37,    49,    38,    63,    -1,    -1,    72,    -1,    -1,    22,
+      67,    69,    -1,    -1,    72,    -1,    39,    68,    40,    37,
+      49,    38,    -1,    24,    12,    -1,    23,    12,    -1,    72,
+      31,    72,    -1,    72,    32,    72,    -1,    72,    33,    72,
+      -1,    72,    34,    72,    -1,    72,    35,    72,    -1,    72,
+      27,    72,    -1,    72,    26,    72,    -1,    72,    15,    72,
+      -1,    72,    14,    72,    -1,    72,    16,    72,    -1,    72,
+      17,    72,    -1,    72,    19,    72,    -1,    72,    18,    72,
+      -1,    72,    30,    72,    -1,    32,    72,    -1,    36,    72,
+      -1,    42,    72,    -1,     4,    -1,     3,    -1,    57,    -1,
+      39,    72,    40,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    48,    48,    51,    55,    57,    59,    61,    63,    67,
-      71,    75,    79,    83
+       0,    56,    56,    57,    62,    63,    67,    79,    90,    91,
+      95,   100,   109,   110,   114,   115,   116,   117,   118,   119,
+     120,   121,   122,   126,   135,   144,   154,   162,   174,   184,
+     187,   196,   211,   243,   244,   248,   255,   268,   273,   275,
+     276,   277,   281,   287,   296,   301,   305,   313,   320,   329,
+     340,   353,   359,   365,   371,   377,   383,   389,   395,   402,
+     409,   415,   421,   427,   433,   439,   447,   455,   462,   465,
+     469,   470
 };
 #endif
 
@@ -445,10 +502,18 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "T_IntConstant", "T_Identifier",
-  "T_std_function", "T_keyword", "T_operator", "$accept", "program",
-  "statement", "operator", "constant", "identifier", "std_function",
-  "keyword", 0
+  "$end", "error", "$undefined", "T_Identifier", "T_IntConstant",
+  "T_std_function", "T_keyword", "T_operator", "T_int", "T_void",
+  "T_return", "T_assign", "T_semicolon", "T_main", "T_Le", "T_Ge", "T_Eq",
+  "T_Ne", "T_And", "T_Or", "T_if", "T_else", "T_while", "T_continue",
+  "T_break", "'='", "'<'", "'>'", "'|'", "'&'", "'^'", "'+'", "'-'", "'*'",
+  "'/'", "'%'", "'!'", "'{'", "'}'", "'('", "')'", "','", "'~'", "$accept",
+  "Program", "FuncDef", "FuncName", "Args", "_Args", "Stmts", "Stmt",
+  "DeclStmt", "DeclList", "AssignStmt", "ReturnStmt", "StdFuncStmt",
+  "FuncCallStmt", "FuncCallExpr", "Actuals", "_Actuals", "BranchStmt",
+  "EndIf", "ElseStmts", "EndElseStmt", "TrueFalseExpressionIF", "ElseDO",
+  "LoopStmt", "Cond", "TrueFalseExpressionLOOP", "WhileBody", "BreakStmt",
+  "ContStmt", "E", 0
 };
 #endif
 
@@ -457,22 +522,38 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275,   276,   277,   278,   279,    61,    60,    62,   124,    38,
+      94,    43,    45,    42,    47,    37,    33,   123,   125,    40,
+      41,    44,   126
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,     8,     9,     9,    10,    10,    10,    10,    10,    11,
-      12,    13,    14,    15
+       0,    43,    44,    44,    45,    45,    46,    46,    47,    47,
+      48,    48,    49,    49,    50,    50,    50,    50,    50,    50,
+      50,    50,    50,    51,    52,    52,    52,    52,    53,    54,
+      55,    56,    57,    58,    58,    59,    59,    60,    61,    62,
+      62,    62,    63,    64,    65,    66,    67,    68,    69,    70,
+      71,    72,    72,    72,    72,    72,    72,    72,    72,    72,
+      72,    72,    72,    72,    72,    72,    72,    72,    72,    72,
+      72,    72
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     2,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1
+       0,     2,     0,     2,     6,     6,     1,     1,     2,     3,
+       2,     4,     0,     2,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     3,     1,     3,     3,     5,     4,     3,
+       3,     2,     2,     2,     3,     1,     3,     9,     0,     2,
+       9,     6,     0,     1,     0,     3,     0,     1,     6,     2,
+       2,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     2,     2,     2,     1,     1,
+       1,     3
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -480,29 +561,59 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,    10,    11,    12,    13,     9,     3,     4,
-       5,     6,     7,     8
+       2,     0,     1,     0,     0,     3,     6,     7,     0,     0,
+       0,     0,     0,     0,     8,     0,    12,    12,    10,     9,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    46,
+       0,     0,     4,    13,    14,    15,    16,    17,    18,     0,
+      19,    20,    21,    22,     5,    11,     0,     0,    32,     0,
+      24,     0,    69,    68,     0,     0,     0,     0,    70,     0,
+       0,     0,    50,    49,    31,     0,    33,     0,    35,    30,
+       0,    23,     0,    65,    66,     0,    67,    29,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    43,     0,    45,    28,    34,     0,    25,
+      26,    71,    59,    58,    60,    61,    63,    62,    57,    56,
+      64,    51,    52,    53,    54,    55,     0,     0,    47,    36,
+       0,    12,     0,    27,     0,    12,    38,     0,    44,    48,
+      44,    37,    42,     0,     0,    39,     0,    12,     0,     0,
+       0,    42,    12,    41,     0,    44,    40
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const yytype_int16 yydefgoto[] =
 {
-      -1,     1,     8,     9,    10,    11,    12,    13
+      -1,     1,     5,     8,    11,    15,    21,    33,    34,    51,
+      35,    36,    37,    38,    58,    48,    67,    40,   128,   131,
+     135,    92,   132,    41,    61,   117,    95,    42,    43,    68
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -1
-static const yytype_int8 yypact[] =
+#define YYPACT_NINF -31
+static const yytype_int16 yypact[] =
 {
-      -1,     0,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1
+     -31,    10,   -31,    -1,    -1,   -31,   -31,   -31,   -30,   -30,
+       0,   -21,   -10,     8,   -31,    41,   -31,   -31,   -31,   -31,
+      24,    64,    75,    33,    -6,     2,    68,    34,    36,   -31,
+      65,    67,   -31,   -31,   -31,   -31,   -31,   -31,   -31,    77,
+     -31,   -31,   -31,   -31,   -31,   -31,    34,     3,   -31,    78,
+      80,     5,     2,   -31,    34,    34,    34,    34,   -31,   230,
+      34,    53,   -31,   -31,   -31,   254,   -31,    56,   175,   -31,
+      34,   -31,    90,   -20,   -31,   203,   276,   -31,    34,    34,
+      34,    34,    34,    34,    34,    34,    34,    34,    34,    34,
+      34,    34,    60,   276,    34,   -31,   -31,   -31,    34,   276,
+      92,   -31,    -9,    -9,   330,   330,   320,   298,    -9,    -9,
+      16,   -20,   -20,   -31,   -31,   -31,    70,    61,   276,   -31,
+      34,   -31,    74,   276,   109,   -31,   -31,   131,    84,   -31,
+      95,   -31,   -31,    79,    85,   -31,    34,   -31,    76,   140,
+      86,   -31,   -31,   -31,   162,    84,   -31
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1
+     -31,   -31,   -31,   120,   118,   -31,   -17,   -31,   -31,   -31,
+     -31,   -31,   -31,   -31,   -18,   103,    32,   -31,   -31,    -8,
+      -3,     4,    12,   -31,   -31,   -31,   -31,   -31,   -31,   -26
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -512,20 +623,105 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-       2,     0,     0,     3,     4,     5,     6,     7
+      22,    59,     6,    39,    39,    46,    52,    53,    13,    10,
+       2,    18,     7,    89,    90,    91,    16,    71,     3,     4,
+      65,    86,    87,    88,    89,    90,    91,    17,    73,    74,
+      75,    76,    23,    47,    93,    54,    45,    52,    53,    55,
+      14,    47,    56,    66,    99,    57,    72,    87,    88,    89,
+      90,    91,   102,   103,   104,   105,   106,   107,   108,   109,
+     110,   111,   112,   113,   114,   115,    54,    24,   118,    25,
+      55,    50,    26,    56,    27,    60,    57,    62,    24,    63,
+      25,    19,    20,    26,    28,    27,    29,    30,    31,    64,
+      69,    70,    94,   100,   123,    28,    97,    29,    30,    31,
+     116,   122,    32,   120,   124,   130,    39,   121,   127,    39,
+      93,   125,    24,    44,    25,   133,   140,    26,   136,    27,
+     139,    39,   137,   142,     9,   144,    39,    12,    49,    28,
+     119,    29,    30,    31,    24,     0,    25,   146,   143,    26,
+     138,    27,   134,    24,     0,    25,     0,   126,    26,     0,
+      27,    28,     0,    29,    30,    31,     0,     0,     0,     0,
+      28,     0,    29,    30,    31,    24,     0,    25,     0,   129,
+      26,     0,    27,     0,     0,     0,     0,     0,   141,     0,
+       0,     0,    28,     0,    29,    30,    31,     0,     0,    78,
+      79,    80,    81,    82,    83,     0,     0,     0,     0,     0,
+     145,    84,    85,     0,     0,    86,    87,    88,    89,    90,
+      91,     0,     0,     0,     0,     0,    98,    78,    79,    80,
+      81,    82,    83,     0,     0,     0,     0,     0,     0,    84,
+      85,     0,     0,    86,    87,    88,    89,    90,    91,     0,
+       0,     0,    77,   101,    78,    79,    80,    81,    82,    83,
+       0,     0,     0,     0,     0,     0,    84,    85,     0,     0,
+      86,    87,    88,    89,    90,    91,    96,     0,    78,    79,
+      80,    81,    82,    83,     0,     0,     0,     0,     0,     0,
+      84,    85,     0,     0,    86,    87,    88,    89,    90,    91,
+      78,    79,    80,    81,    82,    83,     0,     0,     0,     0,
+       0,     0,    84,    85,     0,     0,    86,    87,    88,    89,
+      90,    91,    78,    79,    80,    81,    82,     0,     0,     0,
+       0,     0,     0,     0,    84,    85,     0,     0,    86,    87,
+      88,    89,    90,    91,    78,    79,    80,    81,     0,     0,
+       0,     0,     0,     0,    78,    79,    84,    85,     0,     0,
+      86,    87,    88,    89,    90,    91,    84,    85,     0,     0,
+      86,    87,    88,    89,    90,    91
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-       0,    -1,    -1,     3,     4,     5,     6,     7
+      17,    27,     3,    21,    22,    11,     3,     4,     8,    39,
+       0,     3,    13,    33,    34,    35,    37,    12,     8,     9,
+      46,    30,    31,    32,    33,    34,    35,    37,    54,    55,
+      56,    57,     8,    39,    60,    32,     3,     3,     4,    36,
+      40,    39,    39,    40,    70,    42,    41,    31,    32,    33,
+      34,    35,    78,    79,    80,    81,    82,    83,    84,    85,
+      86,    87,    88,    89,    90,    91,    32,     3,    94,     5,
+      36,     3,     8,    39,    10,    39,    42,    12,     3,    12,
+       5,    40,    41,     8,    20,    10,    22,    23,    24,    12,
+      12,    11,    39,     3,   120,    20,    40,    22,    23,    24,
+      40,    40,    38,    11,   121,    21,   124,    37,   125,   127,
+     136,    37,     3,    38,     5,    20,    40,     8,    39,    10,
+     137,   139,    37,    37,     4,   142,   144,     9,    25,    20,
+      98,    22,    23,    24,     3,    -1,     5,   145,   141,     8,
+     136,    10,   130,     3,    -1,     5,    -1,    38,     8,    -1,
+      10,    20,    -1,    22,    23,    24,    -1,    -1,    -1,    -1,
+      20,    -1,    22,    23,    24,     3,    -1,     5,    -1,    38,
+       8,    -1,    10,    -1,    -1,    -1,    -1,    -1,    38,    -1,
+      -1,    -1,    20,    -1,    22,    23,    24,    -1,    -1,    14,
+      15,    16,    17,    18,    19,    -1,    -1,    -1,    -1,    -1,
+      38,    26,    27,    -1,    -1,    30,    31,    32,    33,    34,
+      35,    -1,    -1,    -1,    -1,    -1,    41,    14,    15,    16,
+      17,    18,    19,    -1,    -1,    -1,    -1,    -1,    -1,    26,
+      27,    -1,    -1,    30,    31,    32,    33,    34,    35,    -1,
+      -1,    -1,    12,    40,    14,    15,    16,    17,    18,    19,
+      -1,    -1,    -1,    -1,    -1,    -1,    26,    27,    -1,    -1,
+      30,    31,    32,    33,    34,    35,    12,    -1,    14,    15,
+      16,    17,    18,    19,    -1,    -1,    -1,    -1,    -1,    -1,
+      26,    27,    -1,    -1,    30,    31,    32,    33,    34,    35,
+      14,    15,    16,    17,    18,    19,    -1,    -1,    -1,    -1,
+      -1,    -1,    26,    27,    -1,    -1,    30,    31,    32,    33,
+      34,    35,    14,    15,    16,    17,    18,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    26,    27,    -1,    -1,    30,    31,
+      32,    33,    34,    35,    14,    15,    16,    17,    -1,    -1,
+      -1,    -1,    -1,    -1,    14,    15,    26,    27,    -1,    -1,
+      30,    31,    32,    33,    34,    35,    26,    27,    -1,    -1,
+      30,    31,    32,    33,    34,    35
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     9,     0,     3,     4,     5,     6,     7,    10,    11,
-      12,    13,    14,    15
+       0,    44,     0,     8,     9,    45,     3,    13,    46,    46,
+      39,    47,    47,     8,    40,    48,    37,    37,     3,    40,
+      41,    49,    49,     8,     3,     5,     8,    10,    20,    22,
+      23,    24,    38,    50,    51,    53,    54,    55,    56,    57,
+      60,    66,    70,    71,    38,     3,    11,    39,    58,    58,
+       3,    52,     3,     4,    32,    36,    39,    42,    57,    72,
+      39,    67,    12,    12,    12,    72,    40,    59,    72,    12,
+      11,    12,    41,    72,    72,    72,    72,    12,    14,    15,
+      16,    17,    18,    19,    26,    27,    30,    31,    32,    33,
+      34,    35,    64,    72,    39,    69,    12,    40,    41,    72,
+       3,    40,    72,    72,    72,    72,    72,    72,    72,    72,
+      72,    72,    72,    72,    72,    72,    40,    68,    72,    59,
+      11,    37,    40,    72,    49,    37,    38,    49,    61,    38,
+      21,    62,    65,    20,    65,    63,    39,    37,    64,    49,
+      40,    38,    37,    63,    49,    38,    62
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1339,59 +1535,586 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 4:
-#line 55 "../src/parser.y"
-    { tokens.push_back(Token((yyvsp[(1) - (1)].lexeme), Operator)); }
+        case 2:
+#line 56 "../src/parser.y"
+    { /*end of program?*/ }
+    break;
+
+  case 3:
+#line 57 "../src/parser.y"
+    { /* empty */ }
+    break;
+
+  case 4:
+#line 62 "../src/parser.y"
+    { FUNC_RETURN();}
     break;
 
   case 5:
-#line 57 "../src/parser.y"
-    { tokens.push_back(Token((yyvsp[(1) - (1)].lexeme), IntConstant)); }
+#line 63 "../src/parser.y"
+    { FUNC_RETURN(); }
     break;
 
   case 6:
-#line 59 "../src/parser.y"
-    { tokens.push_back(Token((yyvsp[(1) - (1)].lexeme), Identifier)); }
+#line 67 "../src/parser.y"
+    { 
+        intermediate_code+= std::string((yyvsp[(1) - (1)]))+":\n";
+        intermediate_code += "addiu $sp, $sp, -4\n";
+        intermediate_code += "sw $ra, 0($sp)\n";
+        intermediate_code += "sw $fp, 4($sp)\n";
+        intermediate_code += "move $fp, $sp\n";
+        intermediate_code += "addiu $sp, $sp, -0x100\n"; //这里是多少其实不重要🤔，只要大于local var的数目就好
+        sign_table = new SignTable(std::string((yyvsp[(1) - (1)])));
+        intermediate_code+=sign_table->printSignTable();
+        functions.insert(sign_table);
+        debug_log<<"FUNC @"<<std::string((yyvsp[(1) - (1)]))<<":\n";
+        }
     break;
 
   case 7:
-#line 61 "../src/parser.y"
-    { tokens.push_back(Token((yyvsp[(1) - (1)].lexeme), StdFunction)); }
+#line 79 "../src/parser.y"
+    {
+        MAIN(); 
+        sign_table = new SignTable(std::string("main"));
+        intermediate_code+=sign_table->printSignTable();
+        functions.insert(sign_table);
+    }
     break;
 
   case 8:
-#line 63 "../src/parser.y"
-    { tokens.push_back(Token((yyvsp[(1) - (1)].lexeme), Keyword)); }
+#line 90 "../src/parser.y"
+    { /*printf("args empty");*/ }
     break;
 
   case 9:
-#line 67 "../src/parser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
+#line 91 "../src/parser.y"
+    { debug_log<<"ARGLIST:"<<" \n";}
     break;
 
   case 10:
-#line 71 "../src/parser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
+#line 95 "../src/parser.y"
+    {
+        sign_table->addSymbol(Symbol(SymbolType::FUNC_ARG,std::string((yyvsp[(2) - (2)]))));
+        intermediate_code+=sign_table->printSignTable();
+        debug_log<<" "<<std::string((yyvsp[(2) - (2)]))<<" \n";
+    }
     break;
 
   case 11:
-#line 75 "../src/parser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
+#line 100 "../src/parser.y"
+    { 
+        sign_table->addSymbol(Symbol(SymbolType::FUNC_ARG,std::string((yyvsp[(4) - (4)]))));
+        intermediate_code+=sign_table->printSignTable();
+        debug_log<<" "<<std::string((yyvsp[(4) - (4)]))<<" \n";
+    }
     break;
 
   case 12:
-#line 79 "../src/parser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
+#line 109 "../src/parser.y"
+    { /* empty */ }
     break;
 
   case 13:
-#line 83 "../src/parser.y"
-    { (yyval.lexeme) = (yyvsp[(1) - (1)].lexeme); }
+#line 110 "../src/parser.y"
+    { /* empty */ }
+    break;
+
+  case 23:
+#line 126 "../src/parser.y"
+    { 
+    intermediate_code += "# this is a DeclStmt\n";
+    //sign_table.push_back($2);//todo char* 2 std::string，但是好像发现打印出来是正常的，先不管了
+    //printf("sw $zero,%d($fp)\n",(sign_table.size()*-4)); //这里不能按warning操作，否则有问题
+    //printSignTable(sign_table);
+    //交给DeclList处理
+    intermediate_code += "\n";
+}
+    break;
+
+  case 24:
+#line 135 "../src/parser.y"
+    { 
+    intermediate_code += "# this is a DeclStmt\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string((yyvsp[(1) - (1)]))));
+    intermediate_code+=sign_table->printSignTable();
+    //通过类型转换避免错误😠
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table->size()) * 4)) + "($fp)\n";
+    intermediate_code += "# end of DeclList\n\n";
+    debug_log<<"var "<<std::string((yyvsp[(1) - (1)]))<<"\n";
+}
+    break;
+
+  case 25:
+#line 144 "../src/parser.y"
+    { 
+    intermediate_code += "# this is a DeclStmt\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string((yyvsp[(1) - (3)]))));
+    intermediate_code+=sign_table->printSignTable();
+    int offset=sign_table->searchAndCalculateOffset(std::string((yyvsp[(1) - (3)])));
+    MIPS_POP("$v0");
+    intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
+    intermediate_code += "# end of DeclList\n\n";
+    debug_log<<"assign "<<std::string((yyvsp[(1) - (3)]))<<"=\n";
+}
+    break;
+
+  case 26:
+#line 154 "../src/parser.y"
+    { 
+    intermediate_code += "# this is a DeclStmt\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string((yyvsp[(3) - (3)]))));
+    intermediate_code+=sign_table->printSignTable();
+    intermediate_code += "sw $zero, " + std::to_string(-(static_cast<int64_t>(sign_table->size()) * 4)) + "($fp)\n";
+    debug_log<<"var "<<std::string((yyvsp[(3) - (3)]))<<"\n";
+    intermediate_code += "# end of DeclList\n\n";
+}
+    break;
+
+  case 27:
+#line 162 "../src/parser.y"
+    { 
+    intermediate_code += "# this is a DeclStmt\n";
+    sign_table->addSymbol(Symbol(SymbolType::LOCAL_VAR,std::string((yyvsp[(3) - (5)]))));
+    intermediate_code+=sign_table->printSignTable();
+    int offset=sign_table->searchAndCalculateOffset(std::string((yyvsp[(3) - (5)])));
+    MIPS_POP("$v0");
+    intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
+    debug_log<<"assign "<<std::string((yyvsp[(3) - (5)]))<<"=\n";
+    intermediate_code += "# end of DeclList\n\n";
+}
+    break;
+
+  case 28:
+#line 174 "../src/parser.y"
+    { 
+    intermediate_code += "# start of assign stmt\n";
+    int offset=sign_table->searchAndCalculateOffset(std::string((yyvsp[(2) - (4)])));
+    MIPS_POP("$v0");
+    intermediate_code += "sw $v0," + std::to_string(offset) + "($fp)\n";
+    intermediate_code += "\n";
+    intermediate_code += "# end of assign stmt\n";
+    debug_log<<"assign "<<std::string((yyvsp[(1) - (4)]))<<"=\n";
+}
+    break;
+
+  case 29:
+#line 184 "../src/parser.y"
+    {MIPS_POP("$v0");}
+    break;
+
+  case 30:
+#line 187 "../src/parser.y"
+    { 
+    /*从栈中获取参数*/
+    MIPS_POP("$a0");
+    PRINT();
+    debug_log<<"print"<<"\n";
+}
+    break;
+
+  case 31:
+#line 196 "../src/parser.y"
+    { 
+        //printf("jal %s\n",$1); ->这里是不是$1是空的😨
+        //std::vector<std::pair<SymbolType, std::string>> sign_table_main; //不确定
+        //FUNC_RETURN();  这是函数定义里的return，而不是实际的return
+        
+        //std::string identifier = std::string("sign_table_") + $1;
+        //sign_table = frames[identifier];
+        //frame_stack.push(sign_table);
+        //std::cout<<"# "<<identifier<<std::endl;
+        intermediate_code+=sign_table->printSignTable();
+        debug_log<<"call";
+    }
+    break;
+
+  case 32:
+#line 211 "../src/parser.y"
+    { 
+        debug_log << "function " << std::string((yyvsp[(1) - (2)])) << "\n";
+        intermediate_code += "jal " + std::string((yyvsp[(1) - (2)])) + "\n";
+        intermediate_code += sign_table->printSignTable();
+
+        // 计算被调用者参数的数目,计算 return 需要清理的 stack 空间
+        int calleeParamCount = sign_table->get_nums_func_arg();
+        
+        // 查找上一个函数的 SignTable
+        std::string prevFunctionName = std::string((yyvsp[(1) - (2)]));
+        bool found = false;
+        SignTable* prev_sign_table = nullptr;
+        for (auto it = functions.begin(); it != functions.end(); ++it) {
+            if ((*it)->getIdentifier() == prevFunctionName) {
+                prev_sign_table = *it;
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            int prevParamCount = prev_sign_table->get_nums_func_arg();
+            
+            intermediate_code += "# 生成清理 stack 的指令\n";
+            intermediate_code += "addiu $sp, $sp, " + std::to_string(prevParamCount * 4) + "\n";
+            //push ?
+            intermediate_code += "sw $v0, 0($sp)\n";
+            intermediate_code += "addiu $sp, $sp, -4\n";
+        }
+    }
+    break;
+
+  case 33:
+#line 243 "../src/parser.y"
+    {  }
+    break;
+
+  case 34:
+#line 244 "../src/parser.y"
+    { }
+    break;
+
+  case 35:
+#line 248 "../src/parser.y"
+    {
+        intermediate_code += "### Passing the arguments " + std::string((yyvsp[(1) - (1)])) + "\n\n";
+        MIPS_POP("$v0");
+        intermediate_code += "sw $v0, 0($sp)\n";
+        intermediate_code += "addiu $sp, $sp, -4\n";
+        debug_log<<std::string((yyvsp[(1) - (1)]))<<"\n";
+    }
+    break;
+
+  case 36:
+#line 255 "../src/parser.y"
+    {
+        intermediate_code += "### Passing the arguments " + std::string((yyvsp[(1) - (3)])) + "\n";
+        MIPS_POP("$v0");
+        intermediate_code += "sw $v0, 0($sp)\n";
+        intermediate_code += "addiu $sp, $sp, -4\n";
+        intermediate_code += "### End of passing the arguments \n";
+        debug_log<<std::string((yyvsp[(1) - (3)]))<<"\n";
+    }
+    break;
+
+  case 37:
+#line 268 "../src/parser.y"
+    { 
+        debug_log<<"if stmt"<<"\n"; 
+    }
+    break;
+
+  case 38:
+#line 273 "../src/parser.y"
+    { intermediate_code+="j $if_end_"+ std::to_string(if_counter) + ";\n";}
+    break;
+
+  case 39:
+#line 275 "../src/parser.y"
+    {/*else有可能为空，但是打tag的两个空推导不能删除🤔*/}
+    break;
+
+  case 40:
+#line 276 "../src/parser.y"
+    {/*理论上分支语句的中间可以叠加无限的else if，但是先暂时不写这部分*/}
+    break;
+
+  case 41:
+#line 277 "../src/parser.y"
+    { }
+    break;
+
+  case 42:
+#line 281 "../src/parser.y"
+    {
+    intermediate_code+="#tag\n";
+    intermediate_code += "$if_end_"+ std::to_string(if_counter) + ":\n";  
+}
+    break;
+
+  case 43:
+#line 287 "../src/parser.y"
+    {
+    //用栈顶数值判断if语句是否成立
+    MIPS_POP("$t0");
+    if_counter++;
+    //if t0==0，即上面seq不相等，goto $if_else_1 else continue
+    intermediate_code+="beq $t0, $zero, $if_else_"+ std::to_string(if_counter) + ";\n";
+}
+    break;
+
+  case 44:
+#line 296 "../src/parser.y"
+    { 
+    intermediate_code+="#tag\n";
+    intermediate_code += "$if_else_"+ std::to_string(if_counter) + ":\n"; 
+}
+    break;
+
+  case 45:
+#line 301 "../src/parser.y"
+    {
+    debug_log<<"LoopCond"<<"\n"; 
+}
+    break;
+
+  case 46:
+#line 305 "../src/parser.y"
+    { 
+    loop_counter++;
+    loop_stack.push(loop_counter);
+    intermediate_code+="#tag\n";
+    intermediate_code+="$while_cond_" + std::to_string(loop_counter) + ":\n"; 
+}
+    break;
+
+  case 47:
+#line 313 "../src/parser.y"
+    {
+    //用栈顶数值判断if语句是否成立
+    MIPS_POP("$t0");
+    //if t0==0，即上面seq不相等，goto $if_else_loop_counter else continue
+    intermediate_code+="beq $t0, $zero, $while_end_" + std::to_string(loop_counter) + "\n";
+}
+    break;
+
+  case 48:
+#line 320 "../src/parser.y"
+    { 
+    debug_log<<"EndLoopBody"<<"\n"; 
+    intermediate_code += "j $while_cond_" + std::to_string(loop_stack.top()) + "\n";
+    
+    intermediate_code+="#tag\n";
+    intermediate_code += "$while_end_" + std::to_string(loop_stack.top()) + ":\n";
+    loop_stack.pop();
+}
+    break;
+
+  case 49:
+#line 329 "../src/parser.y"
+    {
+    //check if is in loop
+    if(loop_stack.empty()){
+        intermediate_code +="Break error";
+        std::exit(1);
+    }else{
+        intermediate_code+="# break stmt\n";
+        intermediate_code += "j $while_end_" + std::to_string(loop_stack.top()) + ";\n";
+    }
+}
+    break;
+
+  case 50:
+#line 340 "../src/parser.y"
+    {
+        //check if is in loop
+    if(loop_stack.empty()){
+        intermediate_code +="Continue error";
+        std::exit(1);
+    }else{
+        intermediate_code+="# Continue stmt\n";
+        intermediate_code += "j $while_cond_" + std::to_string(loop_stack.top()) + ";\n";
+    }
+}
+    break;
+
+  case 51:
+#line 353 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "add $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tadd\n";
+}
+    break;
+
+  case 52:
+#line 359 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "sub $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tsub\n";
+}
+    break;
+
+  case 53:
+#line 365 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "mul $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tmul\n";
+}
+    break;
+
+  case 54:
+#line 371 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "div $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tdiv\n";
+}
+    break;
+
+  case 55:
+#line 377 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "rem $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\trem\n";
+}
+    break;
+
+  case 56:
+#line 383 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "slt $t0, $t1, $t0\n";
+    EVAL_AFTER();
+    debug_log << "\tgt\n";
+}
+    break;
+
+  case 57:
+#line 389 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "slt $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tlt\n";
+}
+    break;
+
+  case 58:
+#line 395 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "slt $t0, $t0, $t1\n";
+    intermediate_code += "xori $t0, $t0, 1\n";
+    EVAL_AFTER();
+    debug_log << "\tge\n";
+}
+    break;
+
+  case 59:
+#line 402 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "slt $t0, $t1, $t0\n";
+    intermediate_code += "xori $t0, $t0, 1\n";
+    EVAL_AFTER();
+    debug_log << "\tle\n";
+}
+    break;
+
+  case 60:
+#line 409 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "seq $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\teq\n";
+}
+    break;
+
+  case 61:
+#line 415 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "sne $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tne\n";
+}
+    break;
+
+  case 62:
+#line 421 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "or $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tor\n";
+}
+    break;
+
+  case 63:
+#line 427 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "and $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\tand\n";
+}
+    break;
+
+  case 64:
+#line 433 "../src/parser.y"
+    {
+    EVAL_PRE();
+    intermediate_code += "xor $t0, $t0, $t1\n";
+    EVAL_AFTER();
+    debug_log << "\txor\n";
+}
+    break;
+
+  case 65:
+#line 439 "../src/parser.y"
+    {
+    MIPS_POP("$t0");
+    intermediate_code += "sub $t0, $zero, $t0\n";
+    //push t0 into stack
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
+    debug_log << "\tnegation\n";
+}
+    break;
+
+  case 66:
+#line 447 "../src/parser.y"
+    {
+    MIPS_POP("$t0");
+    intermediate_code += "beq $t0, $zero, is_zero\nli $t0, 0  # 操作数不为 0,则结果为 0\nj end_not\nis_zero:\nli $t0, 1  # 操作数为 0,则结果为 1\nend_not:\n";
+    //push t0 into stack
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
+    debug_log << "\tlogical not\n";
+}
+    break;
+
+  case 67:
+#line 455 "../src/parser.y"
+    {
+    MIPS_POP("$t0");
+    intermediate_code += "nor $t0, $t0, $zero\n";
+    intermediate_code += "sw $t0, 0($sp)\n";
+    intermediate_code += "addiu $sp, $sp, -4\n";
+    debug_log << "\tbitwise not\n";
+}
+    break;
+
+  case 68:
+#line 462 "../src/parser.y"
+    { 
+    MIPS_PUSH_CONST((yyvsp[(1) - (1)]));
+}
+    break;
+
+  case 69:
+#line 465 "../src/parser.y"
+    { 
+    int offset = sign_table->searchAndCalculateOffset(std::string((yyvsp[(1) - (1)]))); 
+    MIPS_PUSH_VARS(offset);
+}
+    break;
+
+  case 71:
+#line 470 "../src/parser.y"
+    { /* empty */ }
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1395 "y.tab.c"
+#line 2118 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1605,46 +2328,34 @@ yyreturn:
 }
 
 
-#line 86 "../src/parser.y"
+#line 473 "../src/parser.y"
 
 
-int main(int argc, char** argv) {
-    if (argc > 1) {
-        FILE* file = fopen(argv[1], "r");
-        if (!file) {
-            cerr << "Error opening file" << endl;
-            return 1;
-        }
-        yyin = file;
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "未提供源代码文件名." << std::endl;
+        return 0;
     }
-
+    std::string filename = argv[1];  // 获取文件名
+    yyin = fopen(filename.c_str(), "r");
+    // 缓存yyparse的结果
+    
     yyparse();
 
-    for (const auto& token : tokens) {
-        cout << "Token: " << token.lexeme << ", Type: ";
-        switch (token.type) {
-            case IntConstant:
-                cout << "IntConstant";
-                break;
-            case Identifier:
-                cout << "Identifier";
-                break;
-            case StdFunction:
-                cout << "StdFunction";
-                break;
-            case Keyword:
-                cout << "Keyword";
-                break;
-            case Operator:
-                cout << "Operator";
-                break;
-        }
-        cout << endl;
+    // 打印符号表
+    for (const auto& signTable : functions) {
+        std::cout << ".globl " << signTable->getIdentifier() << std::endl;
     }
-
+    //打印data字段
+    std::cout<<".data\nnewline: .asciiz \"\\n\"\n.text\n";
+    //删除最后五行，即main不使用和其他函数一样的return🤔 -> 所以return最好不要有注释？
+    // 1. 找到最后 5 行的起始位置
+    size_t start_pos = intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n", intermediate_code.find_last_of("\n") - 1) - 1) - 1);
+    // 2. 删除最后 5 行
+    intermediate_code.erase(start_pos);
+    std::cout<<intermediate_code;
+    //退出程序
+    std::cout<<"\nli $v0, 10\nsyscall\n";
     return 0;
-}
-
-void yyerror(const char* s) {
-    cerr << "Parser error: " << s << endl;
 }

@@ -63,7 +63,7 @@
     - 创建一个enum，维护符号类型，
         - 如果是local var类型，从 fp-4n (n>0) ，即当前栈帧寻找值
         - 如果是func arg类型，从fp+4n (n>0)，即调用者压入栈，但是不在当前栈帧的地方寻找值
-        ![alt text](image.png)
+        ![alt text](.assset/image.png)
     - 在「后处理」阶段，判断每个栈帧应该有多大，增加每个函数的符号
 
 - 增加「后处理」阶段
@@ -414,7 +414,7 @@ Cond: {intermediate_code+="$while_cond_1:"; };
 
 ### 支持Else-后端
 
-![if-else原理](image-1.png)
+![if-else原理](.assset/image-1.png)
 
 原理大抵如此，仿照这上面while的idea，写入了更好的加tag的方法，和向else if扩展的可能性
 
@@ -731,3 +731,5 @@ g++ -o tcc lex.yy.o y.tab.o sign_table.o -ll -lm -std=c++14 -fsanitize=undefined
 Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
 114
 ```
+
+但是由于冲突，

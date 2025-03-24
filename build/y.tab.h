@@ -44,17 +44,23 @@
      T_std_function = 260,
      T_keyword = 261,
      T_operator = 262,
-     T_Type = 263,
-     T_return = 264,
-     T_assign = 265,
-     T_semicolon = 266,
-     T_main = 267,
-     T_Le = 268,
-     T_Ge = 269,
-     T_Eq = 270,
-     T_Ne = 271,
-     T_And = 272,
-     T_Or = 273
+     T_int = 263,
+     T_void = 264,
+     T_return = 265,
+     T_assign = 266,
+     T_semicolon = 267,
+     T_main = 268,
+     T_Le = 269,
+     T_Ge = 270,
+     T_Eq = 271,
+     T_Ne = 272,
+     T_And = 273,
+     T_Or = 274,
+     T_if = 275,
+     T_else = 276,
+     T_while = 277,
+     T_continue = 278,
+     T_break = 279
    };
 #endif
 /* Tokens.  */
@@ -63,17 +69,23 @@
 #define T_std_function 260
 #define T_keyword 261
 #define T_operator 262
-#define T_Type 263
-#define T_return 264
-#define T_assign 265
-#define T_semicolon 266
-#define T_main 267
-#define T_Le 268
-#define T_Ge 269
-#define T_Eq 270
-#define T_Ne 271
-#define T_And 272
-#define T_Or 273
+#define T_int 263
+#define T_void 264
+#define T_return 265
+#define T_assign 266
+#define T_semicolon 267
+#define T_main 268
+#define T_Le 269
+#define T_Ge 270
+#define T_Eq 271
+#define T_Ne 272
+#define T_And 273
+#define T_Or 274
+#define T_if 275
+#define T_else 276
+#define T_while 277
+#define T_continue 278
+#define T_break 279
 
 
 

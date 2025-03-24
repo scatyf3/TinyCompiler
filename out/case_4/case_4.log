@@ -1,0 +1,151 @@
+Running testcase: ../test/cases_4/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+---------------------------------------
+Running testcase: ../test/cases_4/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+---------------------------------------
+Running testcase: ../test/cases_4/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_4/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+---------------------------------------
+Running testcase: ../test/cases_4/e05.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+(spim) Running testcase: ../test/cases_4/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+---------------------------------------
+Running testcase: ../test/cases_4/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+---------------------------------------
+Running testcase: ../test/cases_4/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_4/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+---------------------------------------
+Running testcase: ../test/cases_4/e05.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+(spim) Running testcase: ../test/cases_4/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+114514
+---------------------------------------
+Running testcase: ../test/cases_4/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+114
+514
+628
+-400
+58596
+0
+114
+2
+626
+624
+114516
+---------------------------------------
+Running testcase: ../test/cases_4/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_4/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+58465
+---------------------------------------
+Running testcase: ../test/cases_4/e05.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+
+
+(spim) Running testcase: ../test/cases_4/e01.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+3
+---------------------------------------
+Running testcase: ../test/cases_4/e02.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+0
+1
+2
+---------------------------------------
+Running testcase: ../test/cases_4/e03.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+15
+---------------------------------------
+Running testcase: ../test/cases_4/e04.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+---------------------------------------
+Running testcase: ../test/cases_4/e05.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+0
+1
+10
+11
+20
+21
+---------------------------------------
+Running testcase: ../test/cases_4/e06.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+0
+2
+3
+---------------------------------------
+Running testcase: ../test/cases_4/e07.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+0
+3
+6
+6
+9
+12
+---------------------------------------
+Running testcase: ../test/cases_4/e08.c
+Loaded: /opt/homebrew/Cellar/spim/9.1.24/share/exceptions.s
+1
+2
+6
+24
+120
+---------------------------------------

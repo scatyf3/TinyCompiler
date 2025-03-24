@@ -1,6 +1,5 @@
-#line 1 "lex.yy.cpp"
 
-#line 3 "lex.yy.cpp"
+#line 2 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -493,17 +492,18 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "../src/tokenrizer.l"
-#line 2 "../src/tokenrizer.l"
+#line 1 "test_flex_rule.l"
+#line 2 "test_flex_rule.l"
 #define YYSTYPE char *
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "../build/y.tab.h"
 void unrecognized_char(char c);
 void yyerror(const char* s);
 int cur_line = 1;
-#line 505 "lex.yy.cpp"
-#line 506 "lex.yy.cpp"
+#line 505 "lex.yy.c"
+#line 506 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -720,9 +720,9 @@ YY_DECL
 		}
 
 	{
-#line 18 "../src/tokenrizer.l"
+#line 19 "test_flex_rule.l"
 
-#line 725 "lex.yy.cpp"
+#line 725 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -781,156 +781,156 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "../src/tokenrizer.l"
+#line 20 "test_flex_rule.l"
 { return yytext[0]; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 20 "../src/tokenrizer.l"
+#line 21 "test_flex_rule.l"
 { return T_assign;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "../src/tokenrizer.l"
+#line 22 "test_flex_rule.l"
 { return T_semicolon;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "../src/tokenrizer.l"
+#line 23 "test_flex_rule.l"
 { return yytext[0];}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 23 "../src/tokenrizer.l"
+#line 24 "test_flex_rule.l"
 { return yytext[0];}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 24 "../src/tokenrizer.l"
+#line 25 "test_flex_rule.l"
 { return yytext[0];}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 25 "../src/tokenrizer.l"
+#line 26 "test_flex_rule.l"
 { return yytext[0];}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 26 "../src/tokenrizer.l"
+#line 27 "test_flex_rule.l"
 { return T_Le;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 27 "../src/tokenrizer.l"
+#line 28 "test_flex_rule.l"
 { return T_Ge;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 28 "../src/tokenrizer.l"
+#line 29 "test_flex_rule.l"
 { return T_Eq;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 29 "../src/tokenrizer.l"
+#line 30 "test_flex_rule.l"
 { return T_Ne;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 30 "../src/tokenrizer.l"
+#line 31 "test_flex_rule.l"
 { return T_And;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "../src/tokenrizer.l"
+#line 32 "test_flex_rule.l"
 { return T_Or;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 32 "../src/tokenrizer.l"
+#line 33 "test_flex_rule.l"
 { return T_int; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 33 "../src/tokenrizer.l"
+#line 34 "test_flex_rule.l"
 { return T_void; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 34 "../src/tokenrizer.l"
+#line 35 "test_flex_rule.l"
 { return T_return; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "../src/tokenrizer.l"
+#line 36 "test_flex_rule.l"
 { return T_main; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 36 "../src/tokenrizer.l"
+#line 37 "test_flex_rule.l"
 { return T_std_function; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 37 "../src/tokenrizer.l"
+#line 38 "test_flex_rule.l"
 { return T_if; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 38 "../src/tokenrizer.l"
+#line 39 "test_flex_rule.l"
 { return T_else; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 39 "../src/tokenrizer.l"
+#line 40 "test_flex_rule.l"
 { return T_while; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "../src/tokenrizer.l"
+#line 41 "test_flex_rule.l"
 { return T_continue; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "../src/tokenrizer.l"
+#line 42 "test_flex_rule.l"
 { return T_break; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "../src/tokenrizer.l"
+#line 43 "test_flex_rule.l"
 { yylval = strdup(yytext); return T_IntConstant; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 43 "../src/tokenrizer.l"
+#line 44 "test_flex_rule.l"
 { yylval = strdup(yytext); return T_Identifier; }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 44 "../src/tokenrizer.l"
+#line 45 "test_flex_rule.l"
 {cur_line++;}
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 45 "../src/tokenrizer.l"
+#line 46 "test_flex_rule.l"
 { /* ignore all spaces */               }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 46 "../src/tokenrizer.l"
+#line 47 "test_flex_rule.l"
 {/*printf("未识别的字符 %c，ASCII 编码：%d\n", *yytext, *yytext); */ }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 47 "../src/tokenrizer.l"
+#line 48 "test_flex_rule.l"
 { return 0; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 48 "../src/tokenrizer.l"
+#line 49 "test_flex_rule.l"
 ECHO;
 	YY_BREAK
-#line 933 "lex.yy.cpp"
+#line 933 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1933,21 +1933,35 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 48 "../src/tokenrizer.l"
-
+#line 49 "test_flex_rule.l"
 
 
 int yywrap(void) { 
     return 1;
 }
 
-void unrecognized_char(char c) {
-    char buf[32] = "Unrecognized character: ?";
-    buf[24] = c;
-    yyerror(buf);
-}
 
-void yyerror(const char *msg) {
-    printf("Error at line %d:\n\t%s\n", cur_line, msg);
-    exit(1);
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+
+    std::ifstream input_file(argv[1]);
+    if (!input_file.is_open()) {
+        std::cerr << "Error: Could not open file " << argv[1] << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    while (std::getline(input_file, line)) {
+        yy_scan_string(line.c_str());
+        int token;
+        while ((token = yylex()) != 0) {
+            std::cout << "Token: " << token << ", Value: " << yytext << std::endl;
+        }
+    }
+
+    input_file.close();
+    return 0;
 }
